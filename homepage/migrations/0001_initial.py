@@ -16,7 +16,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Course',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('course_id', models.IntegerField(primary_key=True)),
+                ('name',  models.CharField(max_length=100)),
+                ('mandatory', models.SmallIntegerField()),
+                ('credit_points', models.SmallIntegerField()),
+                ('syllabi', models.CharField(max_length=200)),
+                ('avg_rating', models.DecimalField(max_digits=6, decimal_places=5)),
+                ('num_of_raters', models.IntegerField()),
+                ('avg_load', models.DecimalField(max_digits=6, decimal_places=5)),
+                ('num_of_reviewers', models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
