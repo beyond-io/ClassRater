@@ -25,3 +25,12 @@ class Review(models.Model):
     date = models.DateTimeField(default=timezone.now)
     content = models.TextField()
     course_load = models.SmallIntegerField()
+
+
+class Professor(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Professor_to_Course(models.Model):
+    professor_id = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
