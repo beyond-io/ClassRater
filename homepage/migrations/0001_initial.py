@@ -28,6 +28,20 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='Prerequisites',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('course_id', models.ForeignKey(
+                    db_column='course_id', on_delete=django.db.models.deletion.CASCADE,
+                    related_name='new_course_id', to='homepage.course')),
+                ('req_course_id', models.ForeignKey(
+                    db_column='req_course_id', on_delete=django.db.models.deletion.CASCADE,
+                    related_name='required_course_id', to='homepage.course')),
+                ('req_code', models.SmallIntegerField(
+                    choices=[(-2, 'None'), (-1, 'Cant'), (0, 'Simu'), (1, 'Before')], default=-2)),
+            ],
+        ),
+        migrations.CreateModel(
             name='User',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
