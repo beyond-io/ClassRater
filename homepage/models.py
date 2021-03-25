@@ -14,6 +14,32 @@ class Course(models.Model):
     num_of_reviewers = models.IntegerField()  # number of reviewers
 
 
+class Prerequisites(models.Model):
+    # for   course A = the prerequisite course
+    #       course B = the course the user wants to take
+    # the relatiosnship between them, as depicted by req_code:
+    #               -2  if there is no relation between taking course A before or during course B and taking course B
+    #               -1  if  course B can't be taken if course A was taken (before or at the same time)
+    # req_code =     0  if  course A must be taken at the same time (or before) course B
+    #                1  if  course A must be taken before course B
+
+    # choices for the req_code field
+    class Req_Code(models.IntegerChoices):
+        NONE = -2
+        CANT = -1
+        SIMU = 0
+        BEFORE = 1
+
+    # id of course B
+    course_id = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name='new_course_id', db_column='course_id')
+    # id of course A
+    req_course_id = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name='required_course_id', db_column='req_course_id')
+    # requirement code : depiction of the relationship between A and B as stated above
+    req_code = models.SmallIntegerField(choices=Req_Code.choices, default=Req_Code.NONE)
+
+
 class User(models.Model):
     pass
 
