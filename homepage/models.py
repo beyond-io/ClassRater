@@ -41,7 +41,9 @@ class Prerequisites(models.Model):
 
 
 class User(models.Model):
-    pass
+    name = models.CharField(max_length=100)
+    email = models.CharField(max_length=50)
+    password = models.CharField(max_length=30)
 
 
 class Review(models.Model):
