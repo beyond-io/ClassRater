@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
 
         users_test_data = [
             ('testUser1', 'user1@gmail.com', 'password123'),
-            ("testUser2", "David@gmail.com", "Password456"),
-            ("testUser3", "User3@gmail.com", "User3Password")
+            ('testUser2', 'David@gmail.com', 'Password456'),
+            ('testUser3', 'User3@gmail.com', 'User3Password')
         ]
 
         with transaction.atomic():
