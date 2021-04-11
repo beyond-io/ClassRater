@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 
 class Course(models.Model):
@@ -40,15 +41,16 @@ class Prerequisites(models.Model):
     req_code = models.SmallIntegerField(choices=Req_Code.choices, default=Req_Code.NONE)
 
 
-class User(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.CharField(max_length=50)
-    password = models.CharField(max_length=30)
+class AppUser(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self):
+        return self.user.username
 
 
 class Review(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     rate = models.SmallIntegerField()
     date = models.DateTimeField(default=timezone.now)
     content = models.TextField()
