@@ -14,6 +14,9 @@ class Course(models.Model):
     num_of_raters = models.IntegerField()  # number of raters for course ratnig and course load
     num_of_reviewers = models.IntegerField()  # number of reviewers
 
+    def __str__(self):
+        return self.name
+
 
 class Prerequisites(models.Model):
     # for   course A = the prerequisite course
@@ -40,6 +43,9 @@ class Prerequisites(models.Model):
     # requirement code : depiction of the relationship between A and B as stated above
     req_code = models.SmallIntegerField(choices=Req_Code.choices, default=Req_Code.NONE)
 
+    def __str__(self):
+        return f'req_cour = {self.req_course_id}, desired_cour = {self.course_id}, req_code = {self.req_code}'
+
 
 class AppUser(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
@@ -56,11 +62,26 @@ class Review(models.Model):
     content = models.TextField()
     course_load = models.SmallIntegerField()
 
+    def __str__(self):
+        MAX_WORDS_PREVIEW = 5
+        MAX_LENGTH_PREVIEW = 40
+
+        shortened_review = ' '.join(self.content.split()[:MAX_WORDS_PREVIEW])
+        shortened_review = shortened_review[:MAX_LENGTH_PREVIEW]
+
+        return f'Preview: {shortened_review}...'
+
 
 class Professor(models.Model):
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 
 class Professor_to_Course(models.Model):
     professor_id = models.ForeignKey(Professor, on_delete=models.CASCADE)
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'prof = {self.professor_id}, cour = {self.course_id}'
