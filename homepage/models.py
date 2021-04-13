@@ -6,7 +6,7 @@ from django.conf import settings
 class Course(models.Model):
     course_id = models.IntegerField(primary_key=True)  # course id number as given by college
     name = models.CharField(max_length=100)  # course name as given by college
-    mandatory = models.SmallIntegerField()  # is the course mandatory (True) or an elective (False)
+    mandatory = models.BooleanField()  # is the course mandatory (True) or an elective (False)
     credit_points = models.SmallIntegerField()  # the credit points assigned to this course by the college
     syllabi = models.CharField(max_length=200)  # link to syllabi of the course, not for use, currently
     avg_load = models.DecimalField(max_digits=6, decimal_places=5)  # average course load
@@ -16,6 +16,14 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
+
+    def Details(self):
+        mandatory = 'yes' if self.mandatory == 1 else 'no'
+        msg = f"indentifier: {self.course_id}   \tName: {self.name}\nMandatory? {mandatory}\n"
+        msg += f"Credit Points: {self.credit_points}\nSyllabi: {self.syllabi}\n"
+        msg += f"Average Rating: {round(self.avg_rating, 3)} \tAverage Load: {round(self.avg_load, 3)}\t"
+        msg += f"{self.num_of_raters} Raters\nNumber Of Reviews: {self.num_of_reviewers}"
+        print(msg)
 
 
 class Prerequisites(models.Model):
@@ -54,6 +62,21 @@ class AppUser(models.Model):
         return self.user.username
 
 
+class Professor(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class Professor_to_Course(models.Model):
+    professor_id = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'prof = {self.professor_id}, cour = {self.course_id}'
+
+
 class Review(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
@@ -70,18 +93,3 @@ class Review(models.Model):
         shortened_review = shortened_review[:MAX_LENGTH_PREVIEW]
 
         return f'Preview: {shortened_review}...'
-
-
-class Professor(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class Professor_to_Course(models.Model):
-    professor_id = models.ForeignKey(Professor, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'prof = {self.professor_id}, cour = {self.course_id}'

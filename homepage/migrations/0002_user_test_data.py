@@ -8,7 +8,8 @@ class Migration(migrations.Migration):
     ]
 
     def generate_user_test_data(apps, schema_editor):
-        from homepage.models import User
+        from homepage.models import AppUser
+        from django.contrib.auth.models import User
 
         users_test_data = [
             ('testUser1', 'user1@gmail.com', 'password123'),
@@ -18,7 +19,9 @@ class Migration(migrations.Migration):
 
         with transaction.atomic():
             for user_name, user_email, user_password in users_test_data:
-                User(name=user_name, password=user_password, email=user_email).save()
+                user = User.objects.create_user(username=user_name, email=user_email, password=user_password)
+                AppUser(user=user).save()
+#                AppUser.user.objects.create_user(user_name, user_password, user_email).save()
 
     operations = [
         migrations.RunPython(generate_user_test_data),
