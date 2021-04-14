@@ -76,6 +76,7 @@ class Professor_to_Course(models.Model):
     def __str__(self):
         return f'prof = {self.professor_id}, cour = {self.course_id}'
 
+
 class Review(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
@@ -95,3 +96,4 @@ class Review(models.Model):
         shortened_review = shortened_review[:MAX_LENGTH_PREVIEW]
 
         return f'Preview: {shortened_review}...'
+    
