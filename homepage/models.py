@@ -76,14 +76,16 @@ class Professor_to_Course(models.Model):
     def __str__(self):
         return f'prof = {self.professor_id}, cour = {self.course_id}'
 
-
 class Review(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     rate = models.SmallIntegerField()
     date = models.DateTimeField(default=timezone.now)
-    content = models.TextField()
+    content = models.TextField(null=True, blank=True)
     course_load = models.SmallIntegerField()
+    likes_num = models.SmallIntegerField(default=0)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, null=True, blank=True)
+    image = models.ImageField(null=True, blank=True, upload_to="images/")
 
     def __str__(self):
         MAX_WORDS_PREVIEW = 5
