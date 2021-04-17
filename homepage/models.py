@@ -54,6 +54,14 @@ class AppUser(models.Model):
         return self.user.username
 
 
+class FollowedUserCourses(models.Model):
+    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'user = {self.user}, course = {self.course}'
+
+
 class Professor(models.Model):
     name = models.CharField(max_length=100)
 
