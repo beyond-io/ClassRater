@@ -6,7 +6,7 @@ from django.conf import settings
 class Course(models.Model):
     course_id = models.IntegerField(primary_key=True)  # course id number as given by college
     name = models.CharField(max_length=100)  # course name as given by college
-    mandatory = models.SmallIntegerField()  # is the course mandatory (True) or an elective (False)
+    mandatory = models.BooleanField()  # is the course mandatory (True) or an elective (False)
     credit_points = models.SmallIntegerField()  # the credit points assigned to this course by the college
     syllabi = models.CharField(max_length=200)  # link to syllabi of the course, not for use, currently
     avg_load = models.DecimalField(max_digits=6, decimal_places=5)  # average course load
@@ -54,22 +54,12 @@ class AppUser(models.Model):
         return self.user.username
 
 
-class Review(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+class FollowedUserCourses(models.Model):
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    rate = models.SmallIntegerField()
-    date = models.DateTimeField(default=timezone.now)
-    content = models.TextField()
-    course_load = models.SmallIntegerField()
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
-        MAX_WORDS_PREVIEW = 5
-        MAX_LENGTH_PREVIEW = 40
-
-        shortened_review = ' '.join(self.content.split()[:MAX_WORDS_PREVIEW])
-        shortened_review = shortened_review[:MAX_LENGTH_PREVIEW]
-
-        return f'Preview: {shortened_review}...'
+        return f'user = {self.user}, course = {self.course}'
 
 
 class Professor(models.Model):
@@ -84,4 +74,25 @@ class Professor_to_Course(models.Model):
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'prof = {self.professor_id}, cour = {self.course_id}'
+        return f'professor_id = {self.professor_id}, course_id = {self.course_id}'
+
+
+class Review(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    rate = models.SmallIntegerField()
+    date = models.DateTimeField(default=timezone.now)
+    content = models.TextField(null=True, blank=True)
+    course_load = models.SmallIntegerField()
+    likes_num = models.SmallIntegerField(default=0)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, null=True, blank=True)
+    image = models.ImageField(null=True, blank=True, upload_to="images/")
+
+    def __str__(self):
+        MAX_WORDS_PREVIEW = 5
+        MAX_LENGTH_PREVIEW = 40
+
+        shortened_review = ' '.join(self.content.split()[:MAX_WORDS_PREVIEW])
+        shortened_review = shortened_review[:MAX_LENGTH_PREVIEW]
+
+        return f'Preview: {shortened_review}...'
