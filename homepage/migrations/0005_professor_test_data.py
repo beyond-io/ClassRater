@@ -6,6 +6,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('homepage', '0001_initial'),
         ('homepage', '0003_course_test_data'),
+        ('homepage', '0004_followed_courses_test_data'),
     ]
 
     def generate_data(apps, schema_editor):
