@@ -1,6 +1,8 @@
 import pytest
-from homepage.models import Course
+from homepage.models import Course, Review
 from django.core.exceptions import ValidationError
+from datetime import datetime
+import pytz
 
 
 # -----------course tests----------- #
@@ -103,3 +105,89 @@ def test_create_multiple_courses():
     # make sure that multiple courses are saved accurately
     courses = [Course.objects.get(pk=arg[0]).get_details() for arg in details]
     assert courses == details
+
+
+# -----------Review tests----------- #
+@pytest.fixture
+def reviews_list():
+    return list(Review.objects.values_list(
+        'course', 'user', 'rate', 'date', 'content', 'course_load', 'professor', 'image'))
+
+
+# check the data stored in database from 0006_review_test_data.py file
+@pytest.mark.django_db
+def test_model_review_list(reviews_list):
+    cur_date = datetime(2015, 10, 9, 23, 55, 59, 5, tzinfo=pytz.UTC)
+    image = 'images/new_test_image.jpg'
+
+    assert reviews_list == [
+        (10111, 1, 5, cur_date, 'Great course', 3, 3, image),
+        (10111, 1, 4, cur_date, "I've learned a lot!", 2, None, ''),
+        (10221, 2, 4, cur_date, 'The course was difficult', 5, 1, ''),
+        (10221, 2, 3, cur_date, "I didn't learn anything new", 3, None, ''),
+        (10231, 3, 4, cur_date, 'This course helped me to find a job', 2, None, ''),
+        (10231, 3, 3, cur_date, "I didn't understand the material", 4, None, ''),
+    ]
+
+
+@pytest.mark.parametrize("valid_review", [
+    (10, 10231, 3, 3, datetime(2017, 9, 8, 22, 55, 59, 5, tzinfo=pytz.UTC), "It was too difficult", 4, 0, None, ''),
+    (11, 10111, 2, 4, datetime(2017, 9, 8, 22, 55, 59, 5, tzinfo=pytz.UTC), "I've learned a lot!", 4, 0, None, ''),
+])
+@pytest.mark.django_db
+def test_add_valid_review(valid_review):
+    review = Review(*valid_review)
+    review.save()
+
+    assert Review.objects.filter(pk=review.id).exists()
+
+
+@pytest.mark.parametrize("invalid_review", [
+    (10, 10231, 3, 10, datetime(2015, 10, 9, 23, 55, 59, 5, tzinfo=pytz.UTC), "Great course!", 4, 0, None, ''),
+    # 0: rate > 5  ^rate
+    (11, 10111, 2, 4, datetime(2017, 9, 8, 22, 55, 59, 5, tzinfo=pytz.UTC), "I've learned a lot!", 0, 0, None, ''),
+    # 2: course_load < 1                                                                           ^course_load
+])
+@pytest.mark.django_db
+def test_create_invalid_review(invalid_review):
+    invalid = False
+
+    try:
+        Review(*invalid_review).clean_fields()
+    except ValidationError:
+        invalid = True
+
+    assert invalid
+
+
+@pytest.mark.parametrize("new_review, expected_string", [
+    ((10, 10231, 3, 3, datetime(2015, 10, 9, 23, 55, 59, 5, tzinfo=pytz.UTC),
+        "I didn't understand the material at all?!", 4, 0, None, ''),
+        "Shortened review: I didn't understand the material..."),
+    ((11, 10111, 2, 4, datetime(2017, 9, 8, 22, 55, 59, 5, tzinfo=pytz.UTC),
+        "I've learned a lot, helped me to find a job", 4, 0, None, ''),
+        "Shortened review: I've learned a lot, helped..."),
+])
+def test_review_str(new_review, expected_string):
+    review = Review(*new_review)
+
+    assert str(review) == expected_string
+
+
+@pytest.mark.parametrize("review_id, expected_review_details", [
+    (1, "Course: Resonance in Runes and Signs\n" + "User: testUser1\n" + "Rating: 5\n" +
+        "Shortened review: Great course...\n" + "Course load: 3\n" +
+        "Likes number: 10\n" + "Professor: Bathsheda Babbling\n"),
+    # 2-Course: check a review without professor returns 'N/A'
+    (2, "Course: Resonance in Runes and Signs\n" + "User: testUser1\n" + "Rating: 4\n" +
+        "Shortened review: I've learned a lot!...\n" + "Course load: 2\n" +
+        "Likes number: 4\n" + "Professor: N/A\n"),
+    (3, "Course: Grammatica in Arithmancy\n" + "User: testUser2\n" + "Rating: 4\n" +
+        "Shortened review: The course was difficult...\n" + "Course load: 5\n" +
+        "Likes number: 0\n" + "Professor: Septima Vector\n"),
+])
+@pytest.mark.django_db
+def test_print_details(capsys, review_id, expected_review_details):
+    Review.objects.get(pk=review_id).print_details()
+
+    assert capsys.readouterr().out == expected_review_details

@@ -103,10 +103,10 @@ class Professor_to_Course(models.Model):
 class Review(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
-    rate = models.SmallIntegerField()
+    rate = models.SmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     date = models.DateTimeField(default=timezone.now)
     content = models.TextField(null=True, blank=True)
-    course_load = models.SmallIntegerField()
+    course_load = models.SmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     likes_num = models.SmallIntegerField(default=0)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, null=True, blank=True)
     image = models.ImageField(null=True, blank=True, upload_to="images/")
@@ -118,4 +118,17 @@ class Review(models.Model):
         shortened_review = ' '.join(self.content.split()[:MAX_WORDS_PREVIEW])
         shortened_review = shortened_review[:MAX_LENGTH_PREVIEW]
 
-        return f'Preview: {shortened_review}...'
+        return f'Shortened review: {shortened_review}...'
+
+    def print_details(self):
+        message = (
+            f"Course: {self.course}\n"
+            f"User: {self.user}\n"
+            f"Rating: {self.rate}\n"
+            f"{str(self)}\n"    # shortened review content
+            f"Course load: {self.course_load}\n"
+            f"Likes number: {self.likes_num}\n"
+            f"Professor: {self.professor if self.professor else 'N/A'}"
+        )
+
+        print(message)
