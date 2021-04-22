@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 class Course(models.Model):
@@ -53,6 +54,34 @@ class AppUser(models.Model):
     def __str__(self):
         return self.user.username
 
+    def toggle_user_activation(self):
+        self.user.is_active = not(self.user.is_active)
+
+    @staticmethod
+    # Creates a new appUser (without superuser permmisions) and saves it in the DB
+    def create_appUser(username, email, password):
+        appUser = AppUser()
+        user = User.objects.create_user(username, email, password)
+        appUser.user = user
+
+        appUser.save()
+        return appUser
+
+    @staticmethod
+    def get_all_appUsers():
+        appUsers = AppUser.objects.all()
+        return list(appUsers)
+
+    @staticmethod
+    def find_appUser(username_ToFind):
+        allAppUsers = AppUser.get_all_appUsers()
+
+        for appUser in allAppUsers:
+            if(appUser.user.username == username_ToFind):
+                return appUser
+
+        return None
+
 
 class FollowedUserCourses(models.Model):
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
@@ -60,6 +89,17 @@ class FollowedUserCourses(models.Model):
 
     def __str__(self):
         return f'user = {self.user}, course = {self.course}'
+
+    @staticmethod
+    def get_courses_followed_by_appUser(appUser):
+        allFollowedUserCourses = FollowedUserCourses.objects.all()
+        courses_followed_by_appUser = list()
+
+        for user_course_pair in allFollowedUserCourses:
+            if (user_course_pair.user == appUser):
+                courses_followed_by_appUser.append(user_course_pair.course)
+
+        return courses_followed_by_appUser
 
 
 class Professor(models.Model):
