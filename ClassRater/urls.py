@@ -19,5 +19,8 @@ from homepage import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home')
+    path('', views.landing, name='landing'),
+    path('courses/', views.courses, name='courses'),
+    path('reviews/', views.reviews, name='reviews'),
+    path('add_review/', views.add_review, name='add_review')
 ]
