@@ -1,21 +1,44 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Course(models.Model):
-    course_id = models.IntegerField(primary_key=True)  # course id number as given by college
+    course_id = models.IntegerField(primary_key=True,
+                                    validators=[MinValueValidator(0)])  # course id number as given by college
     name = models.CharField(max_length=100)  # course name as given by college
     mandatory = models.BooleanField()  # is the course mandatory (True) or an elective (False)
-    credit_points = models.SmallIntegerField()  # the credit points assigned to this course by the college
+    credit_points = models.SmallIntegerField(
+        validators=[MinValueValidator(1),
+                    MaxValueValidator(20)])  # the credit points assigned to this course by the college
     syllabi = models.CharField(max_length=200)  # link to syllabi of the course, not for use, currently
-    avg_load = models.DecimalField(max_digits=6, decimal_places=5)  # average course load
-    avg_rating = models.DecimalField(max_digits=6, decimal_places=5)  # average course rating
-    num_of_raters = models.IntegerField()  # number of raters for course ratnig and course load
-    num_of_reviewers = models.IntegerField()  # number of reviewers
+    avg_load = models.DecimalField(max_digits=6, decimal_places=5,
+                                   validators=[MinValueValidator(1), MaxValueValidator(5)])  # average course load
+    avg_rating = models.DecimalField(max_digits=6, decimal_places=5,
+                                     validators=[MinValueValidator(1), MaxValueValidator(5)])  # average course rating
+    num_of_raters = models.IntegerField(
+        validators=[MinValueValidator(0)])  # number of raters for course rating and course load
+    num_of_reviewers = models.IntegerField(
+        validators=[MinValueValidator(0)])  # number of reviewers
 
     def __str__(self):
         return self.name
+
+    def print_details(self):
+        mandatory = 'yes' if self.mandatory == 1 else 'no'
+        msg = (
+            "------------------------------------------------------------\n"
+            f"Course indentifier: {self.course_id}   \nName: {self.name}\nMandatory? {mandatory}\n"
+            f"Credit Points: {self.credit_points}\nSyllabi: {self.syllabi}\n"
+            f"Average Rating: {round(self.avg_rating, 3)} \tAverage Load: {round(self.avg_load, 3)}\t"
+            f"{self.num_of_raters} Raters\nNumber Of Reviews: {self.num_of_reviewers}"
+            )
+        print(msg)
+
+    def get_details(self):
+        return (self.course_id, self.name, self.mandatory, self.credit_points, self.syllabi,
+                self.avg_load, self.avg_rating, self.num_of_raters, self.num_of_reviewers)
 
 
 class Prerequisites(models.Model):
