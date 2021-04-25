@@ -67,7 +67,15 @@ class Prerequisites(models.Model):
     req_code = models.SmallIntegerField(choices=Req_Code.choices, default=Req_Code.NONE)
 
     def __str__(self):
-        return f'req_cour = {self.req_course_id}, desired_cour = {self.course_id}, req_code = {self.req_code}'
+        return f'Req. Course = {self.req_course_id}, Desired Course = {self.course_id}, Req. Code = {self.req_code}'
+
+    @staticmethod
+    def get_prerequisites_for_course(course):
+        return Prerequisites.objects.filter(course_id=course)
+
+    @staticmethod
+    def does_course_have_prerequisites(course):
+        return Prerequisites.get_prerequisites_for_course(course).exists()
 
 
 class AppUser(models.Model):

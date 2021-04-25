@@ -1,5 +1,5 @@
 import pytest
-from homepage.models import Course, Review
+from homepage.models import Course, Review, Prerequisites
 from django.core.exceptions import ValidationError
 from datetime import datetime
 import pytz
@@ -191,3 +191,112 @@ def test_print_details(capsys, review_id, expected_review_details):
     Review.objects.get(pk=review_id).print_details()
 
     assert capsys.readouterr().out == expected_review_details
+
+# -----------prerequisites tests----------- #
+
+
+# three courses:
+@pytest.fixture
+def courses():
+    courses_list = [
+         Course(1, "Course1", True, 3, "N/A", 1.3, 4, 5, 1),
+         Course(2, "Course2", False, 2, "N/A", 3.5, 2, 13, 5),
+         Course(3, "Course3", False, 1, "N/A", 2, 2.5, 0, 0)
+         ]
+    for course in courses_list:
+        course.save()
+
+    return courses_list
+
+
+@pytest.fixture
+def preqs_list(courses):
+    return [Prerequisites(course_id=courses[1], req_course_id=courses[0], req_code=Prerequisites.Req_Code.BEFORE),
+            Prerequisites(course_id=courses[1], req_course_id=courses[2], req_code=Prerequisites.Req_Code.BEFORE)]
+
+
+# creating a new prerequisite log
+@pytest.mark.django_db
+def test_create_new_prerequisite(courses, preqs_list):
+    valid = True
+    preq = preqs_list[0]
+    try:
+        preq.clean_fields()
+        preq.save()
+    except ValidationError:
+        valid = False
+
+    assert valid and Prerequisites.objects.filter(course_id=preq.course_id).count() == 1
+
+
+# creating a new invalid prerequisite log - req_code invalid
+@pytest.mark.django_db
+def test_create_new_invalid_prerequisite(courses):
+    invalid = False
+    preq = Prerequisites(course_id=courses[1], req_course_id=courses[0], req_code=3)
+    try:
+        preq.clean_fields()
+    except ValidationError:
+        invalid = True
+
+    assert invalid
+
+
+@pytest.mark.django_db
+def test_prerequisite_print(courses, preqs_list, capsys):
+    preq = preqs_list[0]
+    preq.save()
+
+    msg = f"Req. Course = Course1, Desired Course = Course2, Req. Code = {Prerequisites.Req_Code.BEFORE}\n"
+    print(preq)
+    assert capsys.readouterr().out == msg
+
+
+@pytest.mark.django_db
+# test for Course2 which has prerequisite - Course1
+def test_get_prerequisites_for_course_with_one_preqs(courses, preqs_list):
+    preq = preqs_list[0]
+    preq.save()
+
+    assert Prerequisites.get_prerequisites_for_course(courses[1]).count() == 1
+
+
+@pytest.mark.django_db
+# test for Course2 which here depends on taking Course1 and Course3 both
+def test_get_prerequisites_for_course_with_multi_preqs(courses, preqs_list):
+    for preq in preqs_list:
+        preq.save()
+
+    assert Prerequisites.get_prerequisites_for_course(courses[1]).count() == 2
+
+
+@pytest.mark.django_db
+# Course1 has no prerequisites
+def test_get_prerequisites_for_course_with_no_preqs(courses):
+
+    assert not Prerequisites.get_prerequisites_for_course(courses[0]).exists()
+
+
+@pytest.mark.django_db
+# test to see it returns True
+def test_does_course_have_prerequisites_one_preqs(courses, preqs_list):
+    preq = preqs_list[0]
+    preq.save()
+
+    assert Prerequisites.does_course_have_prerequisites(courses[1])
+
+
+@pytest.mark.django_db
+# test to see it returns True
+def test_does_course_have_prerequisites_for_multi_preqs(courses, preqs_list):
+    for preq in preqs_list:
+        preq.save()
+
+    assert Prerequisites.does_course_have_prerequisites(courses[1])
+
+
+@pytest.mark.django_db
+# Course1 has no prerequisites - test to see it returns False
+def test_does_course_have_prerequisites_for_no_preqs(courses):
+
+    assert not Prerequisites.does_course_have_prerequisites(courses[0])
