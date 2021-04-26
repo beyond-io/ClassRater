@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 class Course(models.Model):
@@ -48,10 +49,38 @@ class Prerequisites(models.Model):
 
 
 class AppUser(models.Model):
+    # This field is the built-in django user model
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
         return self.user.username
+
+    def toggle_user_activation(self):
+        self.user.is_active = not(self.user.is_active)
+
+    @staticmethod
+    # Creates a new appUser (without superuser permmisions) and saves it in the DB
+    def create_appUser(username, email, password):
+        appUser = AppUser()
+        user = User.objects.create_user(username, email, password)
+        appUser.user = user
+
+        appUser.save()
+        return appUser
+
+    @staticmethod
+    def get_all_appUsers():
+        return list(AppUser.objects.all())
+
+    @staticmethod
+    def find_appUser(username_ToFind):
+        allAppUsers = AppUser.get_all_appUsers()
+
+        for appUser in allAppUsers:
+            if(appUser.user.username == username_ToFind):
+                return appUser
+
+        return None
 
 
 class FollowedUserCourses(models.Model):
