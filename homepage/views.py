@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import ReviewForm
 
 
 def app_layout(request):
@@ -18,4 +19,11 @@ def reviews(request):
 
 
 def add_review(request):
-    return render(request, 'homepage/add_review.html')
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('add_review')
+    else:
+        form = ReviewForm()
+    return render(request, 'homepage/add_review.html', {'form': form})
