@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from .forms import ReviewForm
+from homepage.models import Course
+from homepage.forms import FilterForm, ReviewForm
 
 
 def app_layout(request):
@@ -11,7 +12,31 @@ def landing(request):
 
 
 def courses(request):
-    return render(request, 'homepage/courses/courses.html')
+    all_courses = Course.get_courses()
+    filters_active = []
+    if request.method == "POST":
+        form = FilterForm(request.POST)
+        if form.is_valid():
+            filters = form.cleaned_data.get('filter_by')
+            for filter in filters:
+                if(filter == 'mand'):
+                    all_courses = Course.get_mandatory_courses(all_courses)
+                    filters_active.append('mandatory')
+                elif(filter == 'elect'):
+                    all_courses = Course.get_elective_courses(all_courses)
+                    filters_active.append('elective')
+                elif(filter == 'load_below'):
+                    all_courses = Course.get_filtered_courses_by_load(3.5, all_courses)
+                    filters_active.append('course load under 3.5')
+                elif(filter == 'rate_over'):
+                    all_courses = Course.get_filtered_courses_by_rating(3.5, all_courses)
+                    filters_active.append('course rating over 3.5')
+    else:
+        form = FilterForm()
+
+    context = {'all_courses': all_courses, 'filters': filters_active}
+    context['form'] = FilterForm()
+    return render(request, 'homepage/courses/courses.html', context)
 
 
 def reviews(request):

@@ -26,7 +26,7 @@ class Course(models.Model):
         return self.name
 
     def print_details(self):
-        mandatory = 'yes' if self.mandatory == 1 else 'no'
+        mandatory = 'yes' if self.mandatory else 'no'
         msg = (
             "------------------------------------------------------------\n"
             f"Course indentifier: {self.course_id}   \nName: {self.name}\nMandatory? {mandatory}\n"
@@ -39,6 +39,36 @@ class Course(models.Model):
     def get_details(self):
         return (self.course_id, self.name, self.mandatory, self.credit_points, self.syllabi,
                 self.avg_load, self.avg_rating, self.num_of_raters, self.num_of_reviewers)
+
+    # --- returns all Course objects - the main 'courses' source for the view
+    @staticmethod
+    def get_courses():
+        return Course.objects.all()
+
+    # --- get filtered course list by rating/load/mandatory/elective  - return QuerySets
+    @staticmethod
+    def get_filtered_courses_by_rating(rating, courses):
+        # gets all courses with average rating >= rating
+        return courses.filter(avg_rating__gte=rating)
+
+    @staticmethod
+    def get_filtered_courses_by_load(load, courses):
+        # gets all courses with average course load <= load
+        return courses.filter(avg_load__lte=load)
+
+    @staticmethod
+    def get_mandatory_courses(courses):
+        # gets all courses that are mandatory
+        return courses.filter(mandatory=True)
+
+    @staticmethod
+    def get_elective_courses(courses):
+        # gets all courses that are electives
+        return courses.filter(mandatory=False)
+
+    # --- returns if course has Prerequisites
+    def has_preqs(self):
+        return Prerequisites.does_course_have_prerequisites(self)
 
 
 class Prerequisites(models.Model):
