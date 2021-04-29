@@ -1,5 +1,5 @@
 import pytest
-from homepage.models import Course, Review
+from homepage.models import Course, Review, AppUser, FollowedUserCourses
 from django.core.exceptions import ValidationError
 from datetime import datetime
 import pytz
@@ -191,3 +191,55 @@ def test_print_details(capsys, review_id, expected_review_details):
     Review.objects.get(pk=review_id).print_details()
 
     assert capsys.readouterr().out == expected_review_details
+
+
+# -----------Followed User Courses tests----------- #
+@pytest.mark.django_db
+class TestFollowedUserCourses:
+
+    @pytest.fixture
+    def appUsers(self):
+        appUser0 = AppUser.create_appUser('user0', 'user1@mta.ac.il', '1234')
+        appUser1 = AppUser.create_appUser('user1', 'user2@gmail.com', '1234')
+        appUser_notFollowing = AppUser.create_appUser('user_notFollowing', 'user3@', '9722')
+
+        return (appUser0, appUser1, appUser_notFollowing)
+
+    @pytest.fixture
+    def courses(self):
+        course0 = Course(course_id=10231, name='course0', mandatory=True, credit_points=0, avg_load=0,
+                         avg_rating=0, num_of_raters=0, num_of_reviewers=0)
+        course0.save()
+
+        course1 = Course(course_id=10400, name='course1', mandatory=True, credit_points=0,
+                         avg_load=0, avg_rating=0, num_of_raters=0, num_of_reviewers=0)
+        course1.save()
+
+        return (course0, course1)
+
+    @pytest.fixture
+    def create_user_course_pairs(self, appUsers, courses):
+        user0_course0 = FollowedUserCourses(user=appUsers[0], course=courses[0])
+        user0_course0.save()
+
+        user0_course1 = FollowedUserCourses(user=appUsers[0], course=courses[1])
+        user0_course1.save()
+
+        user1_course1 = FollowedUserCourses(user=appUsers[1], course=courses[1])
+        user1_course1.save()
+
+    def test_get_courses_followed_by_appUser(self, appUsers, courses, create_user_course_pairs):
+
+        appUser0_courses = FollowedUserCourses.get_courses_followed_by_appUser(appUsers[0])
+        appUser1_courses = FollowedUserCourses.get_courses_followed_by_appUser(appUsers[1])
+        appUser2_courses = FollowedUserCourses.get_courses_followed_by_appUser(appUsers[2])
+
+        # appUsers[0] is following course[0], course[1]
+        assert (courses[0] in appUser0_courses) and (courses[1] in appUser0_courses)
+
+        # appUsers[1] is following course[1], not following course[0]
+        assert courses[1] in appUser1_courses
+        assert courses[0] not in appUser1_courses
+
+        # appUsers[2] is not following any courses
+        assert appUser2_courses == []

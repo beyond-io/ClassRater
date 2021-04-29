@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import User
 
 
 class Course(models.Model):
@@ -76,6 +77,17 @@ class AppUser(models.Model):
     def __str__(self):
         return self.user.username
 
+    @staticmethod
+    # Creates a new appUser (without superuser permmisions) and saves it in the DB
+    # The is_active attribute of AppUser.user is automaticly set to 'True' when creating a new AppUser
+    def create_appUser(username, email, password):
+        appUser = AppUser()
+        user = User.objects.create_user(username, email, password)
+        appUser.user = user
+
+        appUser.save()
+        return appUser
+
 
 class FollowedUserCourses(models.Model):
     user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
@@ -83,6 +95,19 @@ class FollowedUserCourses(models.Model):
 
     def __str__(self):
         return f'user = {self.user}, course = {self.course}'
+
+    @staticmethod
+    def get_courses_followed_by_appUser(appUser):
+        pairs = FollowedUserCourses.objects.filter(user=appUser)
+        followed_appUser_courses = list()
+
+        print(pairs)
+        # get only 'course' elements from user_course_pair elements
+        for user_course_pair in pairs:
+            followed_appUser_courses.append(user_course_pair.course)
+
+        print(followed_appUser_courses)
+        return followed_appUser_courses
 
 
 class Professor(models.Model):
