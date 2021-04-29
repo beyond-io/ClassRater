@@ -104,8 +104,18 @@ class Professor_to_Course(models.Model):
     professor_id = models.ForeignKey(Professor, on_delete=models.CASCADE)
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
 
+    @staticmethod  # returns a list of Course objects
+    def get_courses_by_professor(professor):
+        pro_to_course_list = Professor_to_Course.objects.filter(professor_id=professor)
+        return [arg.course_id for arg in pro_to_course_list]
+
+    @staticmethod  # returns a list of Professor objects
+    def get_professors_by_course(course):
+        pro_to_course_list = Professor_to_Course.objects.filter(course_id=course)
+        return [arg.professor_id for arg in pro_to_course_list]
+
     def __str__(self):
-        return f'professor_id = {self.professor_id}, course_id = {self.course_id}'
+        return f'professor = {self.professor_id.name}, course_id = {self.course_id.course_id}'
 
 
 class Review(models.Model):

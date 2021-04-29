@@ -1,11 +1,12 @@
 import pytest
-from homepage.models import Course, Review, Prerequisites
-from django.core.exceptions import ValidationError
+from homepage.models import Course, Review, Professor, Professor_to_Course, Prerequisites
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from datetime import datetime
 import pytz
 
 
 # -----------course tests----------- #
+
 # creating a single new course with valid input
 @pytest.mark.django_db
 def test_course_create_course():
@@ -300,3 +301,149 @@ def test_does_course_have_prerequisites_for_multi_preqs(courses, preqs_list):
 def test_does_course_have_prerequisites_for_no_preqs(courses):
 
     assert not Prerequisites.does_course_have_prerequisites(courses[0])
+
+
+# ---------Professor tests----------#
+
+@pytest.fixture
+def professors_list():
+    return list(Professor.objects.values_list('name'))
+
+
+@pytest.fixture
+def valid_name():
+    return 'Severus Snape'
+
+
+@pytest.fixture
+def invalid_name():
+    return 'Pablo Diego Jose Francisco de Paula Juan Nepomuceno Maria de \
+    los Remedios Cipriano de la Santisima Trinidad Ruiz y Picasso Snape'
+
+
+# check the data stored in database from 0004_professor_test_data.py file
+@pytest.mark.django_db
+def test_model_professors_list(professors_list):
+
+    assert professors_list == [
+        ('Septima Vector',),
+        ('Sybill Patricia Trelawney',),
+        ('Bathsheda Babbling',),
+    ]
+
+
+@pytest.mark.django_db
+def test_add_valid_professor(valid_name):
+    professor = Professor(name=valid_name)
+    professor.save()
+
+    created_professor = Professor.objects.get(pk=professor.id)
+    assert created_professor.name == valid_name
+
+
+# name is too long (>100)
+@pytest.mark.django_db
+def test_create_invalid_professor(invalid_name):
+    invalid = False
+    try:
+        Professor(invalid_name).clean_fields()
+    except ValidationError:
+        invalid = True
+
+    assert invalid
+
+
+@pytest.mark.django_db
+def test_professor_str(valid_name):
+    professor = Professor(name=valid_name)
+
+    assert str(professor) == professor.name
+
+
+# -----Professor to course tests-----#
+
+@pytest.fixture
+def professor_to_course_list():
+    return list(Professor_to_Course.objects.values_list(
+        'professor_id', 'course_id'))
+
+
+# check the data stored in database from 0004_professor_test_data.py file
+@pytest.mark.django_db
+def test_professor_to_course_list(professor_to_course_list):
+
+    assert professor_to_course_list == [
+        (1, 10221),
+        (1, 12357),
+        (2, 10231),
+        (3, 10111)
+    ]
+
+
+@pytest.mark.django_db
+def test_add_valid_pro_to_course():
+    relation = Professor_to_Course(
+        professor_id=Professor.objects.get(pk=2),
+        course_id=Course.objects.get(pk=10231)
+    )
+    relation.save()
+
+    assert Professor_to_Course.objects.filter(pk=relation.id).exists()
+
+
+# course does not exist (wrong id)
+@pytest.mark.django_db
+def test_add_invalid_course():
+    invalid = False
+
+    try:
+        Professor_to_Course(
+            Professor.objects.get(pk=2),
+            Course.objects.get(pk=10233)
+        ).clean_fields()
+    except ObjectDoesNotExist:
+        invalid = True
+
+    assert invalid
+
+
+# professor does not exist (wrong id)
+@pytest.mark.django_db
+def test_add_invalid_professor():
+    invalid = False
+
+    try:
+        Professor_to_Course(
+            Professor.objects.get(pk=5),
+            Course.objects.get(pk=10231)).clean_fields()
+    except ObjectDoesNotExist:
+        invalid = True
+
+    assert invalid
+
+
+@pytest.mark.django_db
+def test_get_pro_by_course():
+    professors = Professor_to_Course.get_professors_by_course(
+        Course.objects.get(pk=10231)
+    )
+
+    assert (len(professors) == 1) and (Professor.objects.get(pk=2) in professors)
+
+
+@pytest.mark.django_db
+def test_get_course_by_pro():
+    courses = Professor_to_Course.get_courses_by_professor(
+        Professor.objects.get(pk=1)
+    )
+
+    course1 = Course.objects.get(pk=10221)
+    course2 = Course.objects.get(pk=12357)
+    assert (len(courses) == 2) and (course1 in courses) and (course2 in courses)
+
+
+@pytest.mark.django_db
+def test_pro_to_course_str():
+    relation = Professor_to_Course.objects.get(pk=1)
+
+    assert str(relation) == 'professor = Septima Vector, course_id = 10221'
