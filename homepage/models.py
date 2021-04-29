@@ -150,3 +150,7 @@ class Review(models.Model):
         )
 
         print(message)
+
+    @classmethod
+    def main_feed(cls):
+        return cls.objects.order_by('-date')

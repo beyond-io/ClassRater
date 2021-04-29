@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import ReviewForm
+from .models import Review
 
 
 def app_layout(request):
@@ -15,7 +16,8 @@ def courses(request):
 
 
 def reviews(request):
-    return render(request, 'homepage/reviews/reviews.html')
+    reviews = Review.main_feed()
+    return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews})
 
 
 def add_review(request):
