@@ -102,7 +102,7 @@ class AppUser(models.Model):
         try:
             user = User.objects.get(username=username_ToFind)
             return AppUser.objects.get(user=user)
-        except:
+        except User.DoesNotExist:
             return None
 
 

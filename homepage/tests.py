@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 
 
+# -----------User tests----------- #
 @pytest.mark.django_db
 class TestAppUser:
 
@@ -21,7 +22,7 @@ class TestAppUser:
     # 2. The appUser was created sucesfully and saved in the DB
     def test_create_appUser(self, appUsers):
         assert isinstance(appUsers[0], AppUser)
-        assert AppUser.objects.filter(pk = appUsers[0].pk).exists()
+        assert AppUser.objects.filter(pk=appUsers[0].pk).exists()
 
     def test_toggle_user_activation(self, appUsers):
         assert appUsers[0].user.is_active is True
@@ -43,7 +44,7 @@ class TestAppUser:
                 and AppUser.find_appUser('user2')
                 and AppUser.find_appUser('user3'))
 
-        assert AppUser.find_appUser('unknown_user') == None
+        assert AppUser.find_appUser('unknown_user') is None
 
 
 # -----------course tests----------- #
@@ -232,4 +233,3 @@ def test_print_details(capsys, review_id, expected_review_details):
     Review.objects.get(pk=review_id).print_details()
 
     assert capsys.readouterr().out == expected_review_details
-
