@@ -490,4 +490,3 @@ class TestAppUser:
                 and AppUser.find_appUser('user3'))
 
         assert AppUser.find_appUser('unknown_user') is None
-
