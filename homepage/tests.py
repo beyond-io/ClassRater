@@ -204,6 +204,7 @@ def courses():
          Course(2, "Course2", False, 2, "N/A", 3.5, 2, 13, 5),
          Course(3, "Course3", False, 1, "N/A", 2, 2.5, 0, 0)
          ]
+
     for course in courses_list:
         course.save()
 
