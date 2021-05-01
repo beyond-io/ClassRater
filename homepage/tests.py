@@ -1,11 +1,12 @@
 import pytest
-from homepage.models import Course, Review, AppUser
-from django.core.exceptions import ValidationError
+from homepage.models import Course, Review, AppUser, Professor, Professor_to_Course, Prerequisites
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from datetime import datetime
 import pytz
 
 
 # -----------course tests----------- #
+
 # creating a single new course with valid input
 @pytest.mark.django_db
 def test_course_create_course():
@@ -193,7 +194,263 @@ def test_print_details(capsys, review_id, expected_review_details):
     assert capsys.readouterr().out == expected_review_details
 
 
+# -----------prerequisites tests----------- #
+
+# three courses:
+@pytest.fixture
+def courses():
+    courses_list = [
+         Course(1, "Course1", True, 3, "N/A", 1.3, 4, 5, 1),
+         Course(2, "Course2", False, 2, "N/A", 3.5, 2, 13, 5),
+         Course(3, "Course3", False, 1, "N/A", 2, 2.5, 0, 0)
+         ]
+    for course in courses_list:
+        course.save()
+
+    return courses_list
+
+
+@pytest.fixture
+def preqs_list(courses):
+    return [Prerequisites(course_id=courses[1], req_course_id=courses[0], req_code=Prerequisites.Req_Code.BEFORE),
+            Prerequisites(course_id=courses[1], req_course_id=courses[2], req_code=Prerequisites.Req_Code.BEFORE)]
+
+
+# creating a new prerequisite log
+@pytest.mark.django_db
+def test_create_new_prerequisite(courses, preqs_list):
+    valid = True
+    preq = preqs_list[0]
+    try:
+        preq.clean_fields()
+        preq.save()
+    except ValidationError:
+        valid = False
+
+    assert valid and Prerequisites.objects.filter(course_id=preq.course_id).count() == 1
+
+
+# creating a new invalid prerequisite log - req_code invalid
+@pytest.mark.django_db
+def test_create_new_invalid_prerequisite(courses):
+    invalid = False
+    preq = Prerequisites(course_id=courses[1], req_course_id=courses[0], req_code=3)
+    try:
+        preq.clean_fields()
+    except ValidationError:
+        invalid = True
+
+    assert invalid
+
+
+@pytest.mark.django_db
+def test_prerequisite_print(courses, preqs_list, capsys):
+    preq = preqs_list[0]
+    preq.save()
+
+    msg = f"Req. Course = Course1, Desired Course = Course2, Req. Code = {Prerequisites.Req_Code.BEFORE}\n"
+    print(preq)
+    assert capsys.readouterr().out == msg
+
+
+@pytest.mark.django_db
+# test for Course2 which has prerequisite - Course1
+def test_get_prerequisites_for_course_with_one_preqs(courses, preqs_list):
+    preq = preqs_list[0]
+    preq.save()
+
+    assert Prerequisites.get_prerequisites_for_course(courses[1]).count() == 1
+
+
+@pytest.mark.django_db
+# test for Course2 which here depends on taking Course1 and Course3 both
+def test_get_prerequisites_for_course_with_multi_preqs(courses, preqs_list):
+    for preq in preqs_list:
+        preq.save()
+
+    assert Prerequisites.get_prerequisites_for_course(courses[1]).count() == 2
+
+
+@pytest.mark.django_db
+# Course1 has no prerequisites
+def test_get_prerequisites_for_course_with_no_preqs(courses):
+
+    assert not Prerequisites.get_prerequisites_for_course(courses[0]).exists()
+
+
+@pytest.mark.django_db
+# test to see it returns True
+def test_does_course_have_prerequisites_one_preqs(courses, preqs_list):
+    preq = preqs_list[0]
+    preq.save()
+
+    assert Prerequisites.does_course_have_prerequisites(courses[1])
+
+
+@pytest.mark.django_db
+# test to see it returns True
+def test_does_course_have_prerequisites_for_multi_preqs(courses, preqs_list):
+    for preq in preqs_list:
+        preq.save()
+
+    assert Prerequisites.does_course_have_prerequisites(courses[1])
+
+
+@pytest.mark.django_db
+# Course1 has no prerequisites - test to see it returns False
+def test_does_course_have_prerequisites_for_no_preqs(courses):
+
+    assert not Prerequisites.does_course_have_prerequisites(courses[0])
+
+
+# ---------Professor tests----------#
+
+@pytest.fixture
+def professors_list():
+    return list(Professor.objects.values_list('name'))
+
+
+@pytest.fixture
+def valid_name():
+    return 'Severus Snape'
+
+
+@pytest.fixture
+def invalid_name():
+    return 'Pablo Diego Jose Francisco de Paula Juan Nepomuceno Maria de \
+    los Remedios Cipriano de la Santisima Trinidad Ruiz y Picasso Snape'
+
+
+# check the data stored in database from 0004_professor_test_data.py file
+@pytest.mark.django_db
+def test_model_professors_list(professors_list):
+
+    assert professors_list == [
+        ('Septima Vector',),
+        ('Sybill Patricia Trelawney',),
+        ('Bathsheda Babbling',),
+    ]
+
+
+@pytest.mark.django_db
+def test_add_valid_professor(valid_name):
+    professor = Professor(name=valid_name)
+    professor.save()
+
+    created_professor = Professor.objects.get(pk=professor.id)
+    assert created_professor.name == valid_name
+
+
+# name is too long (>100)
+@pytest.mark.django_db
+def test_create_invalid_professor(invalid_name):
+    invalid = False
+    try:
+        Professor(invalid_name).clean_fields()
+    except ValidationError:
+        invalid = True
+
+    assert invalid
+
+
+@pytest.mark.django_db
+def test_professor_str(valid_name):
+    professor = Professor(name=valid_name)
+
+    assert str(professor) == professor.name
+
+
+# -----Professor to course tests-----#
+
+@pytest.fixture
+def professor_to_course_list():
+    return list(Professor_to_Course.objects.values_list(
+        'professor_id', 'course_id'))
+
+
+# check the data stored in database from 0004_professor_test_data.py file
+@pytest.mark.django_db
+def test_professor_to_course_list(professor_to_course_list):
+
+    assert professor_to_course_list == [
+        (1, 10221),
+        (1, 12357),
+        (2, 10231),
+        (3, 10111)
+    ]
+
+
+@pytest.mark.django_db
+def test_add_valid_pro_to_course():
+    relation = Professor_to_Course(
+        professor_id=Professor.objects.get(pk=2),
+        course_id=Course.objects.get(pk=10231)
+    )
+    relation.save()
+
+    assert Professor_to_Course.objects.filter(pk=relation.id).exists()
+
+
+# course does not exist (wrong id)
+@pytest.mark.django_db
+def test_add_invalid_course():
+    invalid = False
+
+    try:
+        Professor_to_Course(
+            Professor.objects.get(pk=2),
+            Course.objects.get(pk=10233)
+        ).clean_fields()
+    except ObjectDoesNotExist:
+        invalid = True
+
+    assert invalid
+
+
+# professor does not exist (wrong id)
+@pytest.mark.django_db
+def test_add_invalid_professor():
+    invalid = False
+
+    try:
+        Professor_to_Course(
+            Professor.objects.get(pk=5),
+            Course.objects.get(pk=10231)).clean_fields()
+    except ObjectDoesNotExist:
+        invalid = True
+
+    assert invalid
+
+
+@pytest.mark.django_db
+def test_get_pro_by_course():
+    professors = Professor_to_Course.get_professors_by_course(
+        Course.objects.get(pk=10231)
+    )
+
+    assert (len(professors) == 1) and (Professor.objects.get(pk=2) in professors)
+
+
+@pytest.mark.django_db
+def test_get_course_by_pro():
+    courses = Professor_to_Course.get_courses_by_professor(
+        Professor.objects.get(pk=1)
+    )
+
+    course1 = Course.objects.get(pk=10221)
+    course2 = Course.objects.get(pk=12357)
+    assert (len(courses) == 2) and (course1 in courses) and (course2 in courses)
+
+
+@pytest.mark.django_db
+def test_pro_to_course_str():
+    relation = Professor_to_Course.objects.get(pk=1)
+
+    assert str(relation) == 'professor = Septima Vector, course_id = 10221'
+
+
 # -----------User tests----------- #
+
 @pytest.mark.django_db
 class TestAppUser:
 
@@ -233,3 +490,4 @@ class TestAppUser:
                 and AppUser.find_appUser('user3'))
 
         assert AppUser.find_appUser('unknown_user') is None
+
