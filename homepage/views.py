@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course
+from homepage.models import Course, Review
 from homepage.forms import FilterForm, ReviewForm
 
 
@@ -40,7 +40,8 @@ def courses(request):
 
 
 def reviews(request):
-    return render(request, 'homepage/reviews/reviews.html')
+    reviews = Review.main_feed()
+    return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews})
 
 
 def add_review(request):

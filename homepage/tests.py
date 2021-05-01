@@ -1,6 +1,7 @@
 import pytest
 from homepage.models import Course, Review, Professor, Professor_to_Course, Prerequisites
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.db.models import QuerySet
 from datetime import datetime
 import pytz
 
@@ -118,16 +119,21 @@ def reviews_list():
 # check the data stored in database from 0006_review_test_data.py file
 @pytest.mark.django_db
 def test_model_review_list(reviews_list):
-    cur_date = datetime(2015, 10, 9, 23, 55, 59, 5, tzinfo=pytz.UTC)
+    date1 = datetime(2015, 10, 9, 23, 55, 59, 5, tzinfo=pytz.UTC)
+    date2 = datetime(2016, 10, 9, 23, 55, 59, 5, tzinfo=pytz.UTC)
+    date3 = datetime(2015, 10, 3, 20, 00, 3, 5, tzinfo=pytz.UTC)
+    date4 = datetime(2017, 3, 9, 18, 20, 00, 5, tzinfo=pytz.UTC)
+    date5 = datetime(2016, 5, 2, 7, 00, 00, 5, tzinfo=pytz.UTC)
+    date6 = datetime(2015, 6, 1, 12, 20, 00, 5, tzinfo=pytz.UTC)
     image = 'images/new_test_image.jpg'
 
     assert reviews_list == [
-        (10111, 1, 5, cur_date, 'Great course', 3, 3, image),
-        (10111, 1, 4, cur_date, "I've learned a lot!", 2, None, ''),
-        (10221, 2, 4, cur_date, 'The course was difficult', 5, 1, ''),
-        (10221, 2, 3, cur_date, "I didn't learn anything new", 3, None, ''),
-        (10231, 3, 4, cur_date, 'This course helped me to find a job', 2, None, ''),
-        (10231, 3, 3, cur_date, "I didn't understand the material", 4, None, ''),
+        (10111, 1, 5, date1, 'Great course', 3, 3, image),
+        (10111, 1, 4, date2, "I've learned a lot!", 2, None, ''),
+        (10221, 2, 4, date3, 'The course was difficult', 5, 1, ''),
+        (10221, 2, 3, date4, "I didn't learn anything new", 3, None, ''),
+        (10231, 3, 4, date5, 'This course helped me to find a job', 2, None, ''),
+        (10231, 3, 3, date6, "I didn't understand the material", 4, None, ''),
     ]
 
 
@@ -192,6 +198,15 @@ def test_print_details(capsys, review_id, expected_review_details):
     Review.objects.get(pk=review_id).print_details()
 
     assert capsys.readouterr().out == expected_review_details
+
+
+@pytest.mark.django_db
+def test_main_feed():
+    result = Review.main_feed()
+    assert isinstance(result, QuerySet)
+    assert all(isinstance(review, Review) for review in result)
+    ids_list = list(result.values_list('id'))
+    assert [arg[0] for arg in ids_list] == [4, 2, 5, 1, 3, 6]
 
 # -----------prerequisites tests----------- #
 
