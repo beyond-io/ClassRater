@@ -7,6 +7,7 @@ import pytest
     ('/reviews/', 200),
     ('/add_review/', 200)
 ])
+@pytest.mark.django_db
 def test_valid_routes(client, valid_route, expected_response):
     response = client.get(valid_route)
     assert response.status_code == expected_response

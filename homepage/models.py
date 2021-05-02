@@ -27,7 +27,7 @@ class Course(models.Model):
         return self.name
 
     def print_details(self):
-        mandatory = 'yes' if self.mandatory == 1 else 'no'
+        mandatory = 'yes' if self.mandatory else 'no'
         msg = (
             "------------------------------------------------------------\n"
             f"Course indentifier: {self.course_id}   \nName: {self.name}\nMandatory? {mandatory}\n"
@@ -40,6 +40,36 @@ class Course(models.Model):
     def get_details(self):
         return (self.course_id, self.name, self.mandatory, self.credit_points, self.syllabi,
                 self.avg_load, self.avg_rating, self.num_of_raters, self.num_of_reviewers)
+
+    # --- returns all Course objects - the main 'courses' source for the view
+    @staticmethod
+    def get_courses():
+        return Course.objects.all()
+
+    # --- get filtered course list by rating/load/mandatory/elective  - return QuerySets
+    @staticmethod
+    def get_filtered_courses_by_rating(rating, courses):
+        # gets all courses with average rating >= rating
+        return courses.filter(avg_rating__gte=rating)
+
+    @staticmethod
+    def get_filtered_courses_by_load(load, courses):
+        # gets all courses with average course load <= load
+        return courses.filter(avg_load__lte=load)
+
+    @staticmethod
+    def get_mandatory_courses(courses):
+        # gets all courses that are mandatory
+        return courses.filter(mandatory=True)
+
+    @staticmethod
+    def get_elective_courses(courses):
+        # gets all courses that are electives
+        return courses.filter(mandatory=False)
+
+    # --- returns if course has Prerequisites
+    def has_preqs(self):
+        return Prerequisites.does_course_have_prerequisites(self)
 
 
 class Prerequisites(models.Model):
@@ -68,7 +98,15 @@ class Prerequisites(models.Model):
     req_code = models.SmallIntegerField(choices=Req_Code.choices, default=Req_Code.NONE)
 
     def __str__(self):
-        return f'req_cour = {self.req_course_id}, desired_cour = {self.course_id}, req_code = {self.req_code}'
+        return f'Req. Course = {self.req_course_id}, Desired Course = {self.course_id}, Req. Code = {self.req_code}'
+
+    @staticmethod
+    def get_prerequisites_for_course(course):
+        return Prerequisites.objects.filter(course_id=course)
+
+    @staticmethod
+    def does_course_have_prerequisites(course):
+        return Prerequisites.get_prerequisites_for_course(course).exists()
 
 
 class AppUser(models.Model):
@@ -121,8 +159,18 @@ class Professor_to_Course(models.Model):
     professor_id = models.ForeignKey(Professor, on_delete=models.CASCADE)
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
 
+    @staticmethod  # returns a list of Course objects
+    def get_courses_by_professor(professor):
+        pro_to_course_list = Professor_to_Course.objects.filter(professor_id=professor)
+        return [arg.course_id for arg in pro_to_course_list]
+
+    @staticmethod  # returns a list of Professor objects
+    def get_professors_by_course(course):
+        pro_to_course_list = Professor_to_Course.objects.filter(course_id=course)
+        return [arg.professor_id for arg in pro_to_course_list]
+
     def __str__(self):
-        return f'professor_id = {self.professor_id}, course_id = {self.course_id}'
+        return f'professor = {self.professor_id.name}, course_id = {self.course_id.course_id}'
 
 
 class Review(models.Model):
@@ -157,3 +205,7 @@ class Review(models.Model):
         )
 
         print(message)
+
+    @classmethod
+    def main_feed(cls):
+        return cls.objects.order_by('-date')

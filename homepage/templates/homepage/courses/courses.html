@@ -1,16 +1,81 @@
 <html>
 <head>
-<title>Class Rater Courses</title>
+    <title>Class Rater Courses</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+    <style>
+        #filters ul{
+            list-style-type:none;
+            margin:0;
+            padding:0;
+        }
+    </style>
 </head>
-
 <body>
 {% extends 'homepage/app_layout.html' %}
 {% block content %}
 <div class="container" style="margin-top:30px">
+  <div class="row justify-content-center p-2">
+      <h2 >Courses Page</h2>
+  </div>
+  <div class="row p-2">
+      <p>
+          <button class="btn btn-outline-dark" type="button" data-toggle="collapse" data-target="#filters" aria-expanded="false" aria-controls="filters">
+              Filters
+          </button>
+          {% if filters %}
+          <span class="p-2"><b>active:</b></span>
+            {% for filter in filters %}
+            <span>{{filter}} | </span>
+            {% endfor %}
+          {% endif %}
+      </p>
+  </div>
+  <div class="row p-2 collapse" id="filters">
+      <div class="card card-body">
+          <div class="text-left">
+              <form method="POST">
+                  <div class="col">
+                      {% csrf_token %}
+                      {{ form.as_p }}
+                  </div>
+                  <div class="col">
+                      <input type="submit" value="Post">
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
   <div class="row">
-    <div class="col-sm-4">
-      <h2>Courses Page</h2>
-    </div>
+          <table class="table table-hover table-striped">
+              <thead class="thead-dark">
+                  <tr>
+                      <th scope="col">Identifier</th>
+                      <th scope="col">Course Name</th>
+                      <th scope="col">Mandatory</th>
+                      <th scope="col">Credit Points</th>
+                      <th scope="col">Prerequisites</th>
+                      <th scope="col">Rating</th>
+                      <th scope="col">Course Load</th>
+                      <th scope="col">Raters</th>
+                      <th scope="col">Reviews</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for course in all_courses %}
+                  <tr>
+                      <td>{{course.course_id}}</td>
+                      <td>{{course.name}}</td>
+                      <td>{% if course.mandatory %} Yes {% else %} No {% endif %}</td>
+                      <td>{{course.credit_points}}</td>
+                      <td>{% if course.has_preqs %} Yes {% else %} No {% endif %}</td>
+                      <td>{{course.avg_rating}}</td>
+                      <td>{{course.avg_load}}</td>
+                      <td>{{course.num_of_raters}}</td>
+                      <td>{{course.num_of_reviewers}}</td>
+                  </tr>
+                  {% endfor%}
+              </tbody>
+          </table>
   </div>
 </div>
 {% endblock %}
