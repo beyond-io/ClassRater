@@ -30,14 +30,14 @@ class Migration(migrations.Migration):
         image = ''
 
         # prevent creating a new image upon every pytest run
-        if not path.exists(path.join(settings.MEDIA_ROOT, NEW_IMAGE_FILE)):
+        if not path.exists(path.join(settings.MEDIA_ROOT, IMAGES_DIR, NEW_IMAGE_FILE)):
             image_path = path.join(settings.MEDIA_ROOT, IMAGES_DIR, IMAGE_FILE)
             image = SimpleUploadedFile(
                 name=NEW_IMAGE_FILE,
                 content=open(image_path, 'rb').read(),
                 content_type='image/jpeg')
         else:
-            image = NEW_IMAGE_FILE
+            image = path.join(IMAGES_DIR, NEW_IMAGE_FILE)
 
         date1 = datetime(2015, 10, 9, 23, 55, 59, 5, tzinfo=pytz.UTC)
         date2 = datetime(2016, 10, 9, 23, 55, 59, 5, tzinfo=pytz.UTC)
