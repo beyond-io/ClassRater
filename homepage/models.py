@@ -70,6 +70,10 @@ class Course(models.Model):
     def has_preqs(self):
         return Prerequisites.does_course_have_prerequisites(self)
 
+    @staticmethod
+    def get_courses_ordered_by_name(name):
+        return Course.objects.filter(name__contains=name).order_by('name')
+
 
 class Prerequisites(models.Model):
     # for   course A = the prerequisite course
