@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review
-from homepage.forms import FilterForm, ReviewForm
+from homepage.models import Course, Review, AppUser
+from homepage.forms import FilterForm, ReviewForm, SignUpForm
+from django.contrib.auth import login
+from django.contrib import messages
 
 
 def app_layout(request):
@@ -53,3 +55,23 @@ def add_review(request):
     else:
         form = ReviewForm()
     return render(request, 'homepage/add_review.html', {'form': form})
+
+
+def sign_up(request):
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+
+        if form.is_valid():
+            appUser = AppUser()
+            appUser.user = form.save()
+            appUser.save()
+
+            login(request, appUser.user)
+            messages.success(request, "Registration successful.")
+            return redirect("sign_in")
+
+        else:
+            messages.error(request, "Unsuccessful registration. Invalid information.")
+
+    form = SignUpForm
+    return render(request=request, template_name="homepage/users/sign_up.html", context={"sign_up_form": form})
