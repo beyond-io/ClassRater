@@ -11,6 +11,7 @@ pytest-django = "*"
 [packages]
 django = "*"
 pillow = "*"
+django-crispy-forms = "*"
 
 [requires]
 python_version = "3.8"
