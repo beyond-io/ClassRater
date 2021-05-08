@@ -1,0 +1,17 @@
+{% extends "homepage/app_layout.html" %}
+
+{% block content %}      
+
+{% load crispy_forms_tags %}
+
+<div class="container py-5">
+    <h1>Sign In</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ sign_in_form|crispy }}
+        <button class="btn btn-primary" type="submit">Sign in</button>
+    </form>
+    <p class="text-center">Don't have an account? <a href="/users/sign_up">Create an account</a>.</p>
+</div>
+
+{% endblock %}

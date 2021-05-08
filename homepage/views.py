@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from homepage.models import Course, Review
 from homepage.forms import FilterForm, ReviewForm
+from django.contrib.auth import login, authenticate
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
 
 
 def app_layout(request):
@@ -53,3 +56,29 @@ def add_review(request):
     else:
         form = ReviewForm()
     return render(request, 'homepage/add_review.html', {'form': form})
+
+
+def sign_in(request):
+    signin_sucesfull = False
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                signin_sucesfull = True
+
+                messages.info(request, f'You are now logged in as {username}.')
+                return redirect('landing')
+
+        if not signin_sucesfull:
+            messages.error(request, 'Invalid username or password.')
+            return redirect('sign_in')
+
+    form = AuthenticationForm()
+    return render(request=request, template_name='homepage/users/sign_in.html', context={'sign_in_form': form})
