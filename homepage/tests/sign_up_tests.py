@@ -26,17 +26,14 @@ class TestSignUp:
     def test_signup_invalid(self, invalid_user_details):
         invalid = False
         form = SignUpForm(data=invalid_user_details)
-
         try:
             form.save()
         except ValueError:
             invalid = True
-
         assert invalid
 
     def test_signup_valid(self, valid_user_details):
         form = SignUpForm(data=valid_user_details)
-
         if form.is_valid():
             user = form.save()
             assert User.objects.filter(pk=user.id).exists()
@@ -47,12 +44,10 @@ class TestSignUp:
 
     def test_uses_signup_form(self, client):
         response = client.get('/users/sign_up/')
-
         assert response.status_code == 200
         assert isinstance(response.context['form'], SignUpForm)
 
     def test_renders_add_signup_template(self, client):
         response = client.get('/users/sign_up/')
-
         assert response.status_code == 200
         assertTemplateUsed(response, 'homepage/users/sign_up.html')
