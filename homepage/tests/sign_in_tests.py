@@ -32,7 +32,6 @@ class TestSignIn:
     def test_post_valid_signIn_with_client(self, client, signed_up_details):
         response = client.post('/users/sign_in/', data={
             'username': signed_up_details[0], 'password': signed_up_details[1]})
-
         HOMEPAGE_URL = '/'
         assert response.url == HOMEPAGE_URL
         assert response.status_code == 302
@@ -40,17 +39,14 @@ class TestSignIn:
     def test_invalid_signIn_redirect(self, client, not_signed_up_details):
         response = client.post('/users/sign_in/', data={
             'username': not_signed_up_details[0], 'password': not_signed_up_details[1]})
-
         assert response.url == '/users/sign_in/'
 
     def test_renders_add_signIn_template(self, client):
         response = client.get('/users/sign_in/')
-
         assert response.status_code == 200
         assertTemplateUsed(response, 'homepage/users/sign_in.html')
 
     def test_uses_authenticate_form(self, client):
         response = client.get('/users/sign_in/')
-
         assert response.status_code == 200
         assert isinstance(response.context['form'], AuthenticationForm)

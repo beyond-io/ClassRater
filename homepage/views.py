@@ -72,7 +72,6 @@ def sign_in(request):
             if user is not None:
                 login(request, user)
                 signin_sucesfull = True
-
                 messages.info(request, f'You are now logged in as {username}.')
                 return redirect('landing')
 
