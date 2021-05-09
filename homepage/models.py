@@ -122,7 +122,6 @@ class AppUser(models.Model):
         app_user = AppUser()
         user = User.objects.create_user(username, email, password)
         app_user.user = user
-
         app_user.save()
         return app_user
 
@@ -137,7 +136,6 @@ class FollowedUserCourses(models.Model):
     @staticmethod
     def get_courses_followed_by_app_user(app_user):
         pairs = FollowedUserCourses.objects.filter(user=app_user)
-
         # get only 'course' elements from user_course_pair elements
         return [user_course_pair.course for user_course_pair in pairs]
 
