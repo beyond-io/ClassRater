@@ -127,7 +127,6 @@ class AppUser(models.Model):
         app_user = AppUser()
         app_user.user = User.objects.create_user(username, email, password)
         app_user.save()
-
         return app_user
 
     @staticmethod
@@ -139,7 +138,6 @@ class AppUser(models.Model):
         try:
             user = User.objects.get(username=username)
             return AppUser.objects.get(user=user)
-
         except User.DoesNotExist:
             return None
 

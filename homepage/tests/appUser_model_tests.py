@@ -10,7 +10,6 @@ class TestAppUser:
         app_user1 = AppUser.create_app_user('user1', 'user1@mta.ac.il', 'useruser222')
         app_user2 = AppUser.create_app_user('user2', 'user2@mta.ac.il', '1234')
         app_user3 = AppUser.create_app_user('user3', 'user3@gmail.com', '10101010')
-
         return (app_user1, app_user2, app_user3)
 
     # The 3 appUsers created in the fixture above are:
@@ -27,7 +26,6 @@ class TestAppUser:
             AppUser.create_app_user('', 'user4@mta.ac.il', 'useruser222')
         except ValueError:
             invalid_username_created = False
-
         assert invalid_username_created is False
 
     # An app_user with empty password does not have a usuable password (Django built in create_user behaviour)
@@ -49,7 +47,6 @@ class TestAppUser:
 
     def test_get_all_app_users(self, app_users):
         all_AppUsers = AppUser.get_all_app_users()
-
         for app_user in app_users:
             assert app_user in all_AppUsers
 
