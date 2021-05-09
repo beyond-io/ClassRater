@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from homepage.models import Course, Review
 from homepage.forms import FilterForm, ReviewForm
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -81,3 +81,9 @@ def sign_in(request):
 
     form = AuthenticationForm()
     return render(request=request, template_name='homepage/users/sign_in.html', context={'sign_in_form': form})
+
+
+def sign_out(request):
+    messages.info(request, f'{request.user.username} successfully logged out')
+    logout(request)
+    return redirect('landing')
