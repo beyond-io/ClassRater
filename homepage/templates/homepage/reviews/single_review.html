@@ -1,0 +1,64 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/single_review.css' %}">
+</head>
+<body>
+<div class="review-box">
+    <div class="title-row">
+        <h4>{{review.user}}</h4>
+        <h6>{{review.date}}</h6>
+    </div>
+    <div>
+        About Course: {{review.course.name}}
+    </div>
+    <div style="margin-top: 20px">
+        {% if review.rate == 5 %}
+        {% for i in "12345"|make_list %}
+        <img src="{% static 'icons/star.png' %}">
+        {% endfor %}
+        {% elif review.rate == 4 %}
+        {% for i in "1234"|make_list %}
+        <img src="{% static 'icons/star.png' %}">
+        {% endfor %}
+        {% elif review.rate == 3 %}
+        {% for i in "123"|make_list %}
+        <img src="{% static 'icons/star.png' %}">
+        {% endfor %}
+        {% elif review.rate == 2 %}
+        {% for i in "12"|make_list %}
+        <img src="{% static 'icons/star.png' %}">
+        {% endfor %}
+        {% else %}
+        <img src="{% static 'icons/star.png' %}">
+        {% endif %}
+    </div>
+    <p style="margin-top: 20px">
+        {{review.content}}
+    <div class="extra-details">
+        <div class="extra-detail">
+            {% if review.professor %}
+            <label class="detail-label">Taught by: </label>{{review.professor}}
+            {% endif %}
+        </div>
+        <div class="extra-detail course-load">
+            <label class="detail-label">Course load: </label>
+            {% if review.course_load == 5 %}
+            <img class="load-emoji" src="{% static 'icons/crying.png' %}">
+            {% elif review.course_load == 4 %}
+            <img class="load-emoji" src="{% static 'icons/sad.png' %}">
+            {% elif review.course_load == 3 %}
+            <img class="load-emoji" src="{% static 'icons/neutral.png' %}">
+            {% elif review.course_load == 2 %}
+            <img class="load-emoji" src="{% static 'icons/smile.png' %}">
+            {% else %}
+            <img class="load-emoji" src="{% static 'icons/smiling.png' %}">
+            {% endif %}
+        </div>
+    </div>
+    <div class="row likes-row">
+        <img class="like-btn" src="{% static 'icons/thumb-up.png' %}"> {{review.likes_num}} students found this
+        helpful
+    </div>
+    </p>
+</div>
+</body>
