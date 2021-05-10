@@ -153,6 +153,12 @@ class FollowedUserCourses(models.Model):
     def __str__(self):
         return f'user = {self.user}, course = {self.course}'
 
+    @staticmethod
+    def get_courses_followed_by_app_user(app_user):
+        pairs = FollowedUserCourses.objects.filter(user=app_user)
+        # get only 'course' elements from user_course_pair elements
+        return [user_course_pair.course for user_course_pair in pairs]
+
 
 class Professor(models.Model):
     name = models.CharField(max_length=100)
