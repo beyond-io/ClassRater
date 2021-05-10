@@ -1,0 +1,24 @@
+<html>
+<head>
+<title>Class Rater Add Review Search</title>
+</head>
+
+<body>
+{% extends 'homepage/app_layout.html' %}
+{% block content %}
+<div class="container-fluid text-left pt-5">
+  <div class="row">
+    <div class="col-sm-4">    
+        {% if courses %}
+        <h2>Click on Course to start a review</h2>
+        {% for course in courses %}
+            <a href="{% url 'add_review' %}">{{ course }}</a></br>
+        {% endfor %}
+        {% else %}
+        <h2>oops! we couldn't find that one "{{ course_name }}"</h2>
+        {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+</body>

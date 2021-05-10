@@ -57,6 +57,15 @@ def add_review(request):
     return render(request, 'homepage/add_review.html', {'form': form})
 
 
+def add_review_search(request):
+    if request.method == "GET":
+        course_name = request.GET.get('course')
+        if not course_name:
+            course_name = ''
+        courses = Course.get_courses_ordered_by_name(course_name)
+        return render(request, 'homepage/add_review_search.html', {'course_name': course_name, 'courses': courses})
+
+
 def sign_up(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
