@@ -129,8 +129,7 @@ class AppUser(models.Model):
     # The is_active attribute of AppUser.user is automaticly set to 'True' when creating a new AppUser
     def create_app_user(username, email, password):
         app_user = AppUser()
-        user = User.objects.create_user(username, email, password)
-        app_user.user = user
+        app_user.user = User.objects.create_user(username, email, password)
         app_user.save()
         return app_user
 
