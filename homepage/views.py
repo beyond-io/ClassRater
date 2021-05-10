@@ -58,8 +58,17 @@ def add_review(request):
     return render(request, 'homepage/add_review.html', {'form': form})
 
 
+def add_review_search(request):
+    if request.method == "GET":
+        course_name = request.GET.get('course')
+        if not course_name:
+            course_name = ''
+        courses = Course.get_courses_ordered_by_name(course_name)
+        return render(request, 'homepage/add_review_search.html', {'course_name': course_name, 'courses': courses})
+
+
 def sign_in(request):
-    signin_sucesfull = False
+    signin_successful = False
 
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
@@ -71,11 +80,11 @@ def sign_in(request):
 
             if user is not None:
                 login(request, user)
-                signin_sucesfull = True
+                signin_successful = True
                 messages.info(request, f'You are now logged in as {username}.')
                 return redirect('landing')
 
-        if not signin_sucesfull:
+        if not signin_successful:
             messages.error(request, 'Invalid username or password.')
             return redirect('sign_in')
 
