@@ -71,6 +71,10 @@ class Course(models.Model):
     def has_preqs(self):
         return Prerequisites.does_course_have_prerequisites(self)
 
+    @staticmethod
+    def get_courses_ordered_by_name(name):
+        return Course.objects.filter(name__contains=name).order_by('name')
+
 
 class Prerequisites(models.Model):
     # for   course A = the prerequisite course
@@ -110,10 +114,15 @@ class Prerequisites(models.Model):
 
 
 class AppUser(models.Model):
+    # This field is the built-in django user model
+    # We currently use the following attributes from the django user model: username, password, email, is_active
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
         return self.user.username
+
+    def toggle_user_activation(self):
+        self.user.is_active = not(self.user.is_active)
 
     @staticmethod
     # Creates a new app_user (without superuser permmisions) and saves it in the DB
@@ -124,6 +133,18 @@ class AppUser(models.Model):
         app_user.user = user
         app_user.save()
         return app_user
+
+    @staticmethod
+    def get_all_app_users():
+        return list(AppUser.objects.all())
+
+    @staticmethod
+    def get_app_user(username):
+        try:
+            user = User.objects.get(username=username)
+            return AppUser.objects.get(user=user)
+        except User.DoesNotExist:
+            return None
 
 
 class FollowedUserCourses(models.Model):
