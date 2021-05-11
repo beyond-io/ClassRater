@@ -24,6 +24,19 @@
             </div>
             <div class="details-row">
                 <label class="course-id">{{course.course_id}}</label>
+                <div class="credit-container">
+                    <label>Credit Points:</label>
+                    <div class="credit-points">
+                        <label>{{course.credit_points}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="details-row">
+                <div>
+                    <img src="{% static 'icons/star.png' %}">
+                    <label class="avg-rating">{{course.avg_rating|floatformat}}</label>
+                    <label class="raters">({{course.num_of_raters}} Raters)</label>
+                </div>
                 <div class="course-load-container">
                     <label>Course load:</label>
                     <div class="course-load">
@@ -39,19 +52,6 @@
                         <img class="load-emoji" src="{% static 'icons/smiling.png' %}">
                         {% endif %}
                         <label>{{course.avg_load|floatformat}}/5</label>
-                    </div>
-                </div>
-            </div>
-            <div class="details-row">
-                <div>
-                    <img src="{% static 'icons/star.png' %}">
-                    <label class="avg-rating">{{course.avg_rating|floatformat}}</label>
-                    <label class="raters">({{course.num_of_raters}} Raters)</label>
-                </div>
-                <div class="credit-container">
-                    <label>Credit Points:</label>
-                    <div class="credit-points">
-                        <label>{{course.credit_points}}</label>
                     </div>
                 </div>
             </div>

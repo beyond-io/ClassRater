@@ -59,7 +59,7 @@ def add_review(request):
 def course(request, id):
     try:
         course = Course.objects.get(pk=id)
-        reviews = Review.objects.filter(course=id)
+        reviews = Review.objects.filter(course=id).order_by('-likes_num')
         return render(request, 'homepage/courses/course.html', {'id': id, 'course': course, 'reviews': reviews})
     except ObjectDoesNotExist:
         return redirect('courses')
