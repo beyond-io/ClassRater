@@ -26,4 +26,5 @@ urlpatterns = [
     path('reviews/', views.reviews, name='reviews'),
     path('add_review/', views.add_review, name='add_review'),
     path('course/<int:id>/', views.course, name='course'),
+    path('add_review_search/', views.add_review_search, name='add_review_search'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

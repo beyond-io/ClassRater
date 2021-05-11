@@ -32,11 +32,18 @@
         <a class="nav-link" href="/reviews">Reviews</a>
       </li>   
       <li class="nav-item">
-        <a class="nav-link" href="/add_review">Add Review</a>
-      </li> 
-      <li class="nav-item">
         <a class="nav-link disabled" href="#">Sign In</a>
-      </li>        
+      </li>
+    </ul>
+    <ul class="nav-item ml-auto">
+      <li>
+        <form class="d-flex" method=GET
+            action={% url 'add_review_search' %}>
+            {% csrf_token %}
+            <input class="form-control me-2" type="search" placeholder="Course Name" aria-label="Search" name="course">
+            <button class="btn btn-outline-success btn-block" type="submit">Start a Review</button>
+        </form>
+      </li>
     </ul>
   </div>  
 </nav>
