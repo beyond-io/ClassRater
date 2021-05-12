@@ -16,11 +16,9 @@ class TestFollowedUserCourses:
 
     @pytest.fixture
     def courses(self):
-        course0 = Course(course_id=100231, name='course0', mandatory=True, credit_points=0, avg_load=0,
-                         avg_rating=0, num_of_raters=0, num_of_reviewers=0)
+        course0 = Course(course_id=100231, name='course0', mandatory=True, credit_points=1)
         course0.save()
-        course1 = Course(course_id=100400, name='course1', mandatory=True, credit_points=0,
-                         avg_load=0, avg_rating=0, num_of_raters=0, num_of_reviewers=0)
+        course1 = Course(course_id=100400, name='course1', mandatory=True, credit_points=1)
         course1.save()
         return (course0, course1)
 

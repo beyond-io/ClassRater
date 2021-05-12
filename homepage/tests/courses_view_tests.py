@@ -8,9 +8,9 @@ from pytest_django.asserts import assertTemplateUsed
 @pytest.fixture
 def courses():
     courses_list = [
-         Course(1, "Course1", True, 3, "N/A", 1.3, 4, 5, 1),
-         Course(2, "Course2", False, 2, "N/A", 3.5, 2, 13, 5),
-         Course(3, "Course3", False, 1, "N/A", 2, 2.5, 0, 0)
+         Course(1, "Course1", True, 3, None, 1.3, 4, 5, 1),
+         Course(2, "Course2", False, 2, None, 3.5, 2, 13, 5),
+         Course(3, "Course3", False, 1, None, 2, 2.5, 2, 0)
          ]
     for course in courses_list:
         course.save()
