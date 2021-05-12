@@ -12,25 +12,9 @@
         About Course: {{review.course.name}}
     </div>
     <div style="margin-top: 20px">
-        {% if review.rate == 5 %}
-        {% for i in "12345"|make_list %}
+        {% for i in " "|rjust:review.rate|make_list %}
         <img src="{% static 'icons/star.png' %}">
         {% endfor %}
-        {% elif review.rate == 4 %}
-        {% for i in "1234"|make_list %}
-        <img src="{% static 'icons/star.png' %}">
-        {% endfor %}
-        {% elif review.rate == 3 %}
-        {% for i in "123"|make_list %}
-        <img src="{% static 'icons/star.png' %}">
-        {% endfor %}
-        {% elif review.rate == 2 %}
-        {% for i in "12"|make_list %}
-        <img src="{% static 'icons/star.png' %}">
-        {% endfor %}
-        {% else %}
-        <img src="{% static 'icons/star.png' %}">
-        {% endif %}
     </div>
     <p style="margin-top: 20px">
         {{review.content}}
