@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from homepage.models import Course, Review
 from homepage.forms import FilterForm, ReviewForm
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def app_layout(request):
@@ -53,6 +54,15 @@ def add_review(request):
     else:
         form = ReviewForm()
     return render(request, 'homepage/add_review.html', {'form': form})
+
+
+def course(request, id):
+    try:
+        course = Course.objects.get(pk=id)
+        reviews = Review.objects.filter(course=id).order_by('-likes_num')
+        return render(request, 'homepage/courses/course.html', {'id': id, 'course': course, 'reviews': reviews})
+    except ObjectDoesNotExist:
+        return redirect('courses')
 
 
 def add_review_search(request):
