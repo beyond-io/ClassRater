@@ -5,7 +5,6 @@ import pytest
     ('', 200),
     ('/courses/', 200),
     ('/reviews/', 200),
-    ('/add_review/10231', 200)
 ])
 @pytest.mark.django_db
 def test_valid_routes(client, valid_route, expected_response):
