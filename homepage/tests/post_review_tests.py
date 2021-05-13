@@ -40,10 +40,10 @@ def test_post_valid_review(review_details):
 
 
 @pytest.mark.parametrize("course_id, prof_id_list", [
-    ((10221), [1]),  # Grammatica in Arithmancy, Septima Vector
-    ((12357), [1]),  # Numerology, Septima Vector
-    ((10231), [2]),  # UnFogging the Future, Sybill Patricia Trelawney
-    ((10111), [3]),  # Resonance in Runes and Signs, Bathsheda Babbling
+    (10221, [1]),  # Grammatica in Arithmancy, Septima Vector
+    (12357, [1]),  # Numerology, Septima Vector
+    (10231, [2]),  # UnFogging the Future, Sybill Patricia Trelawney
+    (10111, [3]),  # Resonance in Runes and Signs, Bathsheda Babbling
 ])
 @pytest.mark.django_db
 def test_get_queryset_professors_by_course(course_id, prof_id_list):
@@ -76,7 +76,7 @@ def test_renders_add_review_template(client, review_details):
 
 
 @pytest.mark.parametrize("course_id, excpected_status_code", [
-    ((10231), 200), ((10111), 200), ((10221), 200), ((12357), 200), ((666), 302)
+    (10231, 200), (10111, 200), (10221, 200), (12357, 200), (666, 302)
 ])
 @pytest.mark.django_db
 def test_add_review_request(client, course_id, excpected_status_code):
