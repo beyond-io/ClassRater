@@ -181,6 +181,11 @@ class Professor_to_Course(models.Model):
         pro_to_course_list = Professor_to_Course.objects.filter(course_id=course)
         return [arg.professor_id for arg in pro_to_course_list]
 
+    @staticmethod  # returns a queryset of Professor objects
+    def get_queryset_professors_by_course(course):
+        professor_list = Professor_to_Course.objects.filter(course_id=course).values('professor_id')
+        return Professor.objects.filter(id__in=professor_list)
+
     def __str__(self):
         return f'professor = {self.professor_id.name}, course_id = {self.course_id.course_id}'
 

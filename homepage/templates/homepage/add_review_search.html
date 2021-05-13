@@ -12,7 +12,7 @@
         {% if courses %}
         <h2>Click on Course to start a review</h2>
         {% for course in courses %}
-            <a href="{% url 'add_review' %}">{{ course }}</a></br>
+            <a href="{% url 'add_review' course.course_id %}">{{ course }}</a></br>
         {% endfor %}
         {% else %}
         <h2>oops! we couldn't find that one "{{ course_name }}"</h2>
