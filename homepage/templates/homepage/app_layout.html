@@ -59,22 +59,22 @@
 </nav>
 
 
-  {% if messages %}
-  <ul class="messages">
-      {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-      {% endfor %}
-  </ul>
-  {% endif %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+     {% endfor %}
+</ul>
+{% endif %}
 
 
-<div class="jumbotron text-center" style="margin-bottom:0">
+<div class="text-center" style="margin-bottom:0">
 {% block content %}
 {% endblock %}
 </div>
 
 
-<div class="jumbotron text-center" style="margin-bottom:0">
+<div class="text-center">
   <p>ClassRater</p>
 </div>
 

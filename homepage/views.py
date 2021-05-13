@@ -4,6 +4,7 @@ from homepage.forms import FilterForm, ReviewForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def app_layout(request):
@@ -47,15 +48,29 @@ def reviews(request):
     return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews})
 
 
-def add_review(request):
+def add_review(request, course_id):
+    try:
+        course = Course.objects.get(pk=course_id)
+    except ObjectDoesNotExist:
+        return redirect('landing')
+
     if request.method == "POST":
-        form = ReviewForm(request.POST)
+        form = ReviewForm(request.POST, course=course_id)
         if form.is_valid():
             form.save()
-            return redirect('add_review')
+            return redirect('landing')
     else:
-        form = ReviewForm()
-    return render(request, 'homepage/add_review.html', {'form': form})
+        form = ReviewForm(course=course_id)
+    return render(request, 'homepage/add_review.html', {'form': form, 'course_name': course.name})
+
+
+def course(request, id):
+    try:
+        course = Course.objects.get(pk=id)
+        reviews = Review.objects.filter(course=id).order_by('-likes_num')
+        return render(request, 'homepage/courses/course.html', {'id': id, 'course': course, 'reviews': reviews})
+    except ObjectDoesNotExist:
+        return redirect('courses')
 
 
 def add_review_search(request):

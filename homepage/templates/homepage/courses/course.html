@@ -1,0 +1,75 @@
+{% extends 'homepage/app_layout.html' %}
+{% load static %}
+{% block content %}
+<html>
+<head>
+    <title>Class Rater Courses</title>
+    <link rel="stylesheet" href="{% static 'css/course.css' %}">
+</head>
+<body>
+<div class="page-container">
+    <div class="details-container">
+        <div class="details">
+            <div class="course-title-row">
+                <div class="course-title">
+                    {{course.name}}
+                </div>
+                <div class="is-mandatory-label">
+                    {% if course.mandatory %}
+                    <label>mandatory</label>
+                    {% else %}
+                    <label>non-mandatory</label>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="details-row">
+                <label class="course-id">{{course.course_id}}</label>
+                <div class="credit-container">
+                    <label>Credit Points:</label>
+                    <div class="credit-points">
+                        <label>{{course.credit_points}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="details-row">
+                <div>
+                    <img src="{% static 'icons/star.png' %}">
+                    <label class="avg-rating">{{course.avg_rating|floatformat}}</label>
+                    <label class="raters">({{course.num_of_raters}} Raters)</label>
+                </div>
+                <div class="course-load-container">
+                    <label>Course load:</label>
+                    <div class="course-load">
+                        {% if course.avg_load > 4 %}
+                        <img class="load-emoji" src="{% static 'icons/crying.png' %}">
+                        {% elif course.avg_load > 3.5 %}
+                        <img class="load-emoji" src="{% static 'icons/sad.png' %}">
+                        {% elif course.avg_load > 2.5 %}
+                        <img class="load-emoji" src="{% static 'icons/neutral.png' %}">
+                        {% elif course.avg_load >= 2 %}
+                        <img class="load-emoji" src="{% static 'icons/smile.png' %}">
+                        {% else %}
+                        <img class="load-emoji" src="{% static 'icons/smiling.png' %}">
+                        {% endif %}
+                        <label>{{course.avg_load|floatformat}}/5</label>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons-row">
+                <button class="course-btn">Syllabi</button>
+                <button class="course-btn">Add Review</button>
+                <button class="course-btn">Follow Course</button>
+            </div>
+        </div>
+    </div>
+    <div class="bottom-container">
+        <div class="num-review-title">{{reviews.count}} reviews available</div>
+        <div class="reviews-container">
+            {% for review in reviews %}
+            {% include '../reviews/single_review.html' with review=review %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>

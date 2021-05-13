@@ -62,7 +62,7 @@
               </thead>
               <tbody>
                   {% for course in all_courses %}
-                  <tr>
+                  <tr style="cursor: pointer" onclick="location.href='{% url 'course' course.course_id %}'">
                       <td>{{course.course_id}}</td>
                       <td>{{course.name}}</td>
                       <td>{% if course.mandatory %} Yes {% else %} No {% endif %}</td>
