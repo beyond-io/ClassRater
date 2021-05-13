@@ -1,0 +1,97 @@
+img.logo {
+	width: 260px;
+	height: 260px;
+	margin: 70px !important;
+}
+
+.page-container {
+	justify-content: center;
+	display: flex;
+	flex-direction: column;
+	padding: 0 !important;
+}
+
+.top-container {
+	background-color: #182B43;
+	color: #FE812D;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	align-items: center;
+	box-shadow: 2px 2px 3px #FE812D;
+}
+
+.top-content {
+	display: flex;
+	flex-direction: row;
+}
+
+.top-title{
+	display: flex;
+	flex-direction: column;
+	align-self: center;
+	text-shadow: 3px 3px 3px #888888;
+	width: 30%;
+    text-align: left;
+    padding: 70px;
+    font-size: 40px;
+}
+
+.bottom-container {
+	margin-top: 2px !important;
+	display: flex;
+	flex-direction: column;
+	background-color: #e4e4e4;
+}
+
+.reviews-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.preview-box {
+	border-radius: 30px;
+	background-color: #B6D1D5;
+	margin: 50px;
+	flex-direction: column;
+	padding: 30px;
+	display: flex;
+	width: 25%;
+	justify-content: space-between;
+	box-shadow: 2px 2px 3px gray;
+}
+
+.course-name {
+	font-weight: bold;
+	margin: 10px;
+	align-self: flex-start;
+}
+
+.review-content {
+	display: flex;
+	font-weight: normal !important;
+	font-size: 26px;
+	flex-direction: column;
+	margin-bottom: 20px;
+	font-style: italic;
+}
+
+.review-bottom {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.more-reviews {
+	align-self: flex-end;
+	margin: 5px 100px 45px 30px;
+    text-decoration: underline;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.user{
+	font-size: 16px;
+}
+

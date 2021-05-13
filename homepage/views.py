@@ -9,7 +9,10 @@ def app_layout(request):
 
 
 def landing(request):
-    return render(request, 'homepage/landing/landing.html')
+    last_reviews = Review.objects.all().order_by('-date')
+    if len(last_reviews) > 3:
+        last_reviews = last_reviews[:3]
+    return render(request, 'homepage/landing/landing.html', {'reviews': last_reviews})
 
 
 def courses(request):
