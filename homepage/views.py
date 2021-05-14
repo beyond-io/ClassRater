@@ -9,9 +9,7 @@ def app_layout(request):
 
 
 def landing(request):
-    last_reviews = Review.objects.all().order_by('-date')
-    if len(last_reviews) > 3:
-        last_reviews = last_reviews[:3]
+    last_reviews = Review.landing_page_feed()
     return render(request, 'homepage/landing/landing.html', {'reviews': last_reviews})
 
 

@@ -26,11 +26,11 @@ img.logo {
 	flex-direction: row;
 }
 
-.top-title{
+.top-title {
 	display: flex;
 	flex-direction: column;
 	align-self: center;
-	text-shadow: 3px 3px 3px #888888;
+	text-shadow: 2px 2px 8px #888888;
 	width: 30%;
     text-align: left;
     padding: 70px;
