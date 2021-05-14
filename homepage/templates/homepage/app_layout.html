@@ -10,6 +10,11 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <style type="text/css">
     .author, .eom { color: grey }
+    .messages {
+    background-color:dodgerblue;
+    color: white;
+    padding: 10px;
+  }
   </style>
 </head>
 <body>
@@ -49,14 +54,6 @@
 </nav>
 
 
-<style>
-  .messages {
-    background-color:dodgerblue;
-    color: white;
-    padding: 10px;
-  }
-  </style>
-  
   {% if messages %}
   <ul class="messages">
       {% for message in messages %}
