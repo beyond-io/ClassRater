@@ -23,16 +23,6 @@ class ReviewForm(ModelForm):
         }
 
 
-class FilterForm(forms.Form):
-    choices = [('rate_over', 'rating over 3.5'), ('load_below', 'course load under 3.5'),
-               ('mand', 'mandatory'), ('elect', 'elective')]
-    filter_by = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
-        choices=choices,
-        required=False
-        )
-
-
 # This class uses the built in django UserCreationForm and adds an email field
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -51,3 +41,23 @@ class SignUpForm(UserCreationForm):
             user.save()
 
         return user
+
+
+class FilterAndSortForm(forms.Form):
+    initial = {'sort_by': 'id'}
+    filter_choices = [('rate_over', 'rating over 3.5'), ('load_below', 'course load under 3.5'),
+                      ('mand', 'mandatory'), ('elect', 'elective'), ('has_preqs', 'has prerequisites'),
+                      ('no_preqs', 'no prerequisites'), ('rater_num', 'at least 5 raters')]
+    sort_choices = [('id', 'identifier'), ('name', 'name'), ('rating', 'course rating'),
+                    ('load', 'course load'), ('num_reviews', 'number of reviews'), ('num_raters', 'number of raters')]
+    filter_by = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        choices=filter_choices,
+        required=False
+        )
+    sort_by = forms.ChoiceField(
+        choices=sort_choices)
+    widgets = {
+        'filter_by': filter_by,
+        'sort_by': sort_by
+        }
