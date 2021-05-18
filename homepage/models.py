@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
 
@@ -13,26 +14,83 @@ class Course(models.Model):
     credit_points = models.SmallIntegerField(
         validators=[MinValueValidator(1),
                     MaxValueValidator(20)])  # the credit points assigned to this course by the college
-    syllabi = models.CharField(max_length=200)  # link to syllabi of the course, not for use, currently
+    syllabi = models.URLField(blank=True, null=True)  # link to syllabi of the course, not for use, currently
     avg_load = models.DecimalField(max_digits=6, decimal_places=5,
-                                   validators=[MinValueValidator(1), MaxValueValidator(5)])  # average course load
+                                   validators=[MinValueValidator(1), MaxValueValidator(5)],
+                                   blank=True, null=True)  # average course load, starts as null
     avg_rating = models.DecimalField(max_digits=6, decimal_places=5,
-                                     validators=[MinValueValidator(1), MaxValueValidator(5)])  # average course rating
-    num_of_raters = models.IntegerField(
-        validators=[MinValueValidator(0)])  # number of raters for course rating and course load
-    num_of_reviewers = models.IntegerField(
-        validators=[MinValueValidator(0)])  # number of reviewers
+                                     validators=[MinValueValidator(1), MaxValueValidator(5)],
+                                     blank=True, null=True)  # average course rating, starts as null
+    num_of_raters = models.IntegerField(validators=[MinValueValidator(0)],
+                                        default=0)  # number of raters for course rating and course load
+    num_of_reviewers = models.IntegerField(validators=[MinValueValidator(0)],
+                                           default=0)  # number of reviewers
 
     def __str__(self):
         return self.name
 
+    def clean(self):
+        rating = self.avg_rating
+        load = self.avg_load
+        raters = self.num_of_raters
+        reviews = self.num_of_reviewers
+
+        if (rating is not None) and (load is None):
+            raise ValidationError("Can't have rating without load")
+        if (rating is None) and (load is not None):
+            raise ValidationError("Can't have load without rating")
+        if ((rating is None) or (load is None)) and (raters > 0):
+            raise ValidationError("Can't have raters that didn't rate")
+        if ((rating is not None) or (load is not None)) and (raters == 0):
+            raise ValidationError("Can't have ratings without raters")
+        if ((raters == 0) or (load is None) or (rating is None)) and (reviews > 0):
+            raise ValidationError("Can not have reviews without ratings")
+        if (reviews > raters):
+            raise ValidationError("Can not have reviews without ratings")
+
+    def save(self, *args, **kwargs):
+        try:
+            self.clean()
+        except ValidationError:
+            return
+
+        super().save(*args, **kwargs)
+
+    # updates the course according to review output
+    def update_course_per_review(self, reviewer_rating, reviewer_load, has_content):
+        curr_raters = self.num_of_raters
+        curr_reviewers = self.num_of_reviewers
+        curr_avg_load = self.avg_load
+        curr_avg_rating = self.avg_rating
+        if curr_avg_load is None:
+            self.avg_load = reviewer_load
+            self.avg_rating = reviewer_rating
+            self.num_of_raters = 1
+        else:
+            total_rating = curr_avg_rating * curr_raters
+            total_rating += reviewer_rating
+            total_load = curr_avg_load * curr_raters
+            total_load += reviewer_load
+
+            self.num_of_raters = curr_raters + 1
+            self.avg_rating = total_rating / self.num_of_raters
+            self.avg_load = total_load / self.num_of_raters
+
+        if has_content:
+            self.num_of_reviewers = curr_reviewers + 1
+
+        self.save(update_fields=['avg_load', 'avg_rating', 'num_of_raters', 'num_of_reviewers'])
+
     def print_details(self):
         mandatory = 'yes' if self.mandatory else 'no'
+        syllabi = 'Available' if self.syllabi else 'N/A'
+        avg_rating = round(self.avg_rating, 3) if self.avg_rating else 'N/A'
+        avg_load = round(self.avg_load, 3) if self.avg_load else 'N/A'
         msg = (
             "------------------------------------------------------------\n"
             f"Course indentifier: {self.course_id}   \nName: {self.name}\nMandatory? {mandatory}\n"
-            f"Credit Points: {self.credit_points}\nSyllabi: {self.syllabi}\n"
-            f"Average Rating: {round(self.avg_rating, 3)} \tAverage Load: {round(self.avg_load, 3)}\t"
+            f"Credit Points: {self.credit_points}\nSyllabi: {syllabi}\n"
+            f"Average Rating: {avg_rating} \tAverage Load: {avg_load}\t"
             f"{self.num_of_raters} Raters\nNumber Of Reviews: {self.num_of_reviewers}"
             )
         print(msg)
