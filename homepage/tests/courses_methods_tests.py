@@ -131,6 +131,23 @@ def test_course_print_details(capsys):
     assert capsys.readouterr().out == msg
 
 
+# test the print_details function
+@pytest.mark.django_db
+def test_course_print_details_without_ratings(capsys):
+    course = Course.objects.get(pk=10340)
+
+    msg = (
+        "------------------------------------------------------------\n"
+        "Course indentifier: 10340   \nName: No Return - through the Lense\nMandatory? yes\n"
+        "Credit Points: 4\nSyllabi: N/A\n"
+        "Average Rating: N/A \tAverage Load: N/A\t"
+        "0 Raters\nNumber Of Reviews: 0\n"
+        )
+    # make sure that message comes out as expected
+    course.print_details()
+    assert capsys.readouterr().out == msg
+
+
 # test the get_details function
 @pytest.mark.django_db
 def test_course_get_details():
@@ -168,10 +185,10 @@ def courses():
 
 # updating courses after review
 @pytest.mark.django_db
-def test_upd_course_with_previous_data(courses):
+def test_update_course_with_previous_data(courses):
     # testing on Course2
     course = courses[1]
-    course.upd_course_per_review(3, 1, False)  # simulates review that gave rating: 3 load: 1 and no text review
+    course.update_course_per_review(3, 1, False)  # simulates review that gave rating: 3 load: 1 and no text review
     db_course = Course.objects.get(pk=course.course_id)
     # expect rating to be (3 + 2*13) / 14 = 2.07142
 
@@ -182,10 +199,10 @@ def test_upd_course_with_previous_data(courses):
 
 
 @pytest.mark.django_db
-def test_upd_course_with_partial_previous_data(courses):
+def test_update_course_with_partial_previous_data(courses):
     # testing on Course3
     course = courses[2]
-    course.upd_course_per_review(3, 1, True)    # simulates review that gave rating: 3 load: 1 and no text review
+    course.update_course_per_review(3, 1, True)    # simulates review that gave rating: 3 load: 1 and no text review
     db_course = Course.objects.get(pk=course.course_id)
     # expect rating to be (3 + 2*13) / 14 = 2.07142
 
@@ -196,10 +213,10 @@ def test_upd_course_with_partial_previous_data(courses):
 
 
 @pytest.mark.django_db
-def test_up_course_with_no_prev_data(courses):
+def test_update_course_with_no_prev_data(courses):
     # testing for Course1
     course = courses[0]
-    course.upd_course_per_review(3, 1, True)    # simulates review that gave rating: 3 load: 1 and no text review
+    course.update_course_per_review(3, 1, True)    # simulates review that gave rating: 3 load: 1 and no text review
     db_course = Course.objects.get(pk=course.course_id)
 
     assert db_course.avg_rating.compare(Decimal('3.00000')) == 0    # assert change

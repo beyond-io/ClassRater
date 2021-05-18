@@ -36,17 +36,17 @@ class Course(models.Model):
         reviews = self.num_of_reviewers
 
         if (rating is not None) and (load is None):
-            raise ValidationError(("Can't have rating without load"))
+            raise ValidationError("Can't have rating without load")
         if (rating is None) and (load is not None):
-            raise ValidationError(("Can't have load without rating"))
+            raise ValidationError("Can't have load without rating")
         if ((rating is None) or (load is None)) and (raters > 0):
-            raise ValidationError(("Can't have raters that didn't rate"))
+            raise ValidationError("Can't have raters that didn't rate")
         if ((rating is not None) or (load is not None)) and (raters == 0):
-            raise ValidationError(("Can't have ratings without raters"))
+            raise ValidationError("Can't have ratings without raters")
         if ((raters == 0) or (load is None) or (rating is None)) and (reviews > 0):
-            raise ValidationError(("Can not have reviews without ratings"))
+            raise ValidationError("Can not have reviews without ratings")
         if (reviews > raters):
-            raise ValidationError(("Can not have reviews without ratings"))
+            raise ValidationError("Can not have reviews without ratings")
 
     def save(self, *args, **kwargs):
         try:
@@ -57,7 +57,7 @@ class Course(models.Model):
         super().save(*args, **kwargs)
 
     # updates the course according to review output
-    def upd_course_per_review(self, reviewer_rating, reviewer_load, has_content):
+    def update_course_per_review(self, reviewer_rating, reviewer_load, has_content):
         curr_raters = self.num_of_raters
         curr_reviewers = self.num_of_reviewers
         curr_avg_load = self.avg_load
@@ -72,9 +72,9 @@ class Course(models.Model):
             total_load = curr_avg_load * curr_raters
             total_load += reviewer_load
 
-            self.avg_rating = total_rating / (curr_raters + 1)
-            self.avg_load = total_load / (curr_raters + 1)
             self.num_of_raters = curr_raters + 1
+            self.avg_rating = total_rating / self.num_of_raters
+            self.avg_load = total_load / self.num_of_raters
 
         if has_content:
             self.num_of_reviewers = curr_reviewers + 1
@@ -83,10 +83,9 @@ class Course(models.Model):
 
     def print_details(self):
         mandatory = 'yes' if self.mandatory else 'no'
-        # syllabi = ' '
-        syllabi = 'N/A' if (self.syllabi is None) else 'Available'
-        avg_rating = 'N/A' if (self.avg_rating is None) else round(self.avg_rating, 3)
-        avg_load = 'N/A' if (self.avg_load is None) else round(self.avg_load, 3)
+        syllabi = 'Available' if self.syllabi else 'N/A'
+        avg_rating = round(self.avg_rating, 3) if self.avg_rating else 'N/A'
+        avg_load = round(self.avg_load, 3) if self.avg_load else 'N/A'
         msg = (
             "------------------------------------------------------------\n"
             f"Course indentifier: {self.course_id}   \nName: {self.name}\nMandatory? {mandatory}\n"
