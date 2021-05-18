@@ -27,4 +27,6 @@ urlpatterns = [
     path('course/<int:id>/', views.course, name='course'),
     path('add_review/<course_id>', views.add_review, name='add_review'),
     path('add_review_search/', views.add_review_search, name='add_review_search'),
+    path('users/sign_in/', views.sign_in, name='sign_in'),
+    path('users/sign_out/', views.sign_out, name='sign_out'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
