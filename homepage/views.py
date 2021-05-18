@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review
-from homepage.forms import FilterForm, ReviewForm
+from homepage.models import Course, Review, AppUser
+from homepage.forms import FilterForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -81,6 +81,25 @@ def add_review_search(request):
             course_name = ''
         courses = Course.get_courses_ordered_by_name(course_name)
         return render(request, 'homepage/add_review_search.html', {'course_name': course_name, 'courses': courses})
+
+
+def sign_up(request):
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+
+        if form.is_valid():
+            app_user = AppUser()
+            app_user.user = form.save()
+            app_user.save()
+            login(request, app_user.user)
+            messages.success(request, "Registration successful.")
+            return redirect("sign_in")
+
+        else:
+            messages.error(request, "Unsuccessful registration. Invalid information.")
+
+    form = SignUpForm
+    return render(request=request, template_name="homepage/users/sign_up.html", context={"sign_up_form": form})
 
 
 def sign_in(request):
