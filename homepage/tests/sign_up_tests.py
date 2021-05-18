@@ -51,3 +51,8 @@ class TestSignUp:
         response = client.get('/users/sign_up/')
         assert response.status_code == 200
         assertTemplateUsed(response, 'homepage/users/sign_up.html')
+
+    def test_post_valid_signup_with_client(self, client, valid_user_details):
+        response = client.post('/users/sign_up/', data=valid_user_details)
+        assert response.status_code == 302
+        assert response.url == '/users/sign_in/'
