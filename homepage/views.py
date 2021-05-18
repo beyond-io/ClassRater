@@ -86,10 +86,10 @@ def sign_up(request):
         form = SignUpForm(request.POST)
 
         if form.is_valid():
-            appUser = AppUser()
-            appUser.user = form.save()
-            appUser.save()
-            login(request, appUser.user)
+            app_user = AppUser()
+            app_user.user = form.save()
+            app_user.save()
+            login(request, app_user.user)
             messages.success(request, "Registration successful.")
             return redirect("sign_in")
 
