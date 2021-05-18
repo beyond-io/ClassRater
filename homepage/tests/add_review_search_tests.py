@@ -42,15 +42,20 @@ def test_lexicography_order_get_courses_ordered_by_name():
 
 
 # --------Front End testing-------- #
+@pytest.fixture
+def sign_in(client):
+    client.post('/users/sign_in/', data={'username': 'testUser1', 'password': 'password123'})
+
+
 @pytest.mark.django_db
-def test_renders_add_review_search_template(client):
+def test_renders_add_review_search_template(client, sign_in):
     response = client.get('/add_review_search/')
     assert response.status_code == 200
     assertTemplateUsed(response, 'homepage/add_review_search.html')
 
 
 @pytest.mark.django_db
-def test_get_course_by_name_with_client(client):
+def test_get_course_by_name_with_client(client, sign_in):
     response = client.get('/add_review_search/', {'course': 'Resonance'})
     courses_not_found = [b'Grammatica in Arithmancy', b'Numerology', b'UnFogging the Future']
     assert response.status_code == 200
@@ -59,6 +64,13 @@ def test_get_course_by_name_with_client(client):
 
 
 @pytest.mark.django_db
-def test_wrong_course_name_with_client(client):
+def test_wrong_course_name_with_client(client, sign_in):
     response = client.get('/add_review_search/', {'course': 'Introduction to Buddhism'})
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_redirect_unsigned_user_to_sign_in_page(client):
+    response = client.get('/add_review_search/', {'course': 'Introduction to Buddhism'})
+    assert response.status_code == 302
+    assert '/users/sign_in/' in response.url
