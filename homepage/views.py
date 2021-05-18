@@ -83,7 +83,7 @@ def add_review_search(request):
 
 
 def sign_in(request):
-    signin_successful = False
+    sign_in_successful = False
 
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
@@ -93,13 +93,13 @@ def sign_in(request):
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
 
-            if user is not None:
+            if user:
                 login(request, user)
-                signin_successful = True
+                sign_in_successful = True
                 messages.info(request, f'You are now logged in as {username}.')
                 return redirect('landing')
 
-        if not signin_successful:
+        if not sign_in_successful:
             messages.error(request, 'Invalid username or password.')
             return redirect('sign_in')
 
