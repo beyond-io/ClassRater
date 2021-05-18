@@ -13,11 +13,11 @@
     <style type="text/css">
     .author, .eom { color: grey }
     .messages {
-    background-color:dodgerblue;
-    color: white;
-    padding: 10px;
-    }
-   </style>
+        background-color:dodgerblue;
+        color: white;
+        padding: 10px;
+      }
+    </style>
 </head>
 <body>
 
@@ -37,9 +37,15 @@
             <li class="nav-item">
                 <a class="nav-link" href="/reviews">Reviews</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/users/sign_in">Sign In</a>
-            </li>
+              {% if not user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" href="/users/sign_in">Sign In</a>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="users/sign_out/">Sign Out</a>
+                </li>        
+              {% endif %}
         </ul>
         <ul class="nav-item ml-auto">
             <li>
@@ -57,13 +63,13 @@
 </nav>
 
 
-  {% if messages %}
-  <ul class="messages">
-      {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-      {% endfor %}
-  </ul>
-  {% endif %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+     {% endfor %}
+</ul>
+{% endif %}
 
 
 <div class="text-center" style="margin-bottom:0">

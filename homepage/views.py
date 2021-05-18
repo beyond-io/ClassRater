@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from homepage.models import Course, Review, AppUser
 from homepage.forms import FilterForm, ReviewForm, SignUpForm
-from django.contrib.auth import login
+from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -99,3 +100,34 @@ def sign_up(request):
 
     form = SignUpForm
     return render(request=request, template_name="homepage/users/sign_up.html", context={"sign_up_form": form})
+
+
+def sign_in(request):
+    sign_in_successful = False
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+
+            if user:
+                login(request, user)
+                sign_in_successful = True
+                messages.info(request, f'You are now logged in as {username}.')
+                return redirect('landing')
+
+        if not sign_in_successful:
+            messages.error(request, 'Invalid username or password.')
+            return redirect('sign_in')
+
+    form = AuthenticationForm()
+    return render(request=request, template_name='homepage/users/sign_in.html', context={'sign_in_form': form})
+
+
+def sign_out(request):
+    messages.info(request, f'{request.user.username} successfully logged out')
+    logout(request)
+    return redirect('landing')
