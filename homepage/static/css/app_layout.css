@@ -1,0 +1,22 @@
+.navbar {
+	background-color: #182B43;
+}
+
+.nav-link {
+	color: white;
+	font-size: 20px;
+	margin-right: 20px;
+}
+
+.review-btn {
+	color: white;
+    border: 1px solid white;
+    margin-left: 7px;
+    width: 140px;
+}
+
+.course-search {
+	width: 300px;
+}
+
+li { list-style: none }

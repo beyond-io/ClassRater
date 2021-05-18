@@ -1,0 +1,26 @@
+{% load static %}
+<html>
+<head>
+    <title>Class Rater Reviews</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/reviews.css' %}">
+</head>
+<body>
+<div class="preview-box">
+    <div class="course-name">
+        {{review.course.name}} | {{review.course.course_id}}
+    </div>
+    <div class="review-content">
+        "{{review.content|truncatechars:60}}..."
+    </div>
+    <div class="review-bottom">
+        <div>
+            {% for i in " "|rjust:review.rate|make_list %}
+            <img src="{% static 'icons/star.png' %}">
+            {% endfor %}
+        </div>
+        <div class="user">
+            {{review.user}}
+        </div>
+    </div>
+</div>
+</body>

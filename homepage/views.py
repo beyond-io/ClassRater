@@ -12,7 +12,8 @@ def app_layout(request):
 
 
 def landing(request):
-    return render(request, 'homepage/landing/landing.html')
+    last_reviews = Review.landing_page_feed()
+    return render(request, 'homepage/landing/landing.html', {'reviews': last_reviews})
 
 
 def courses(request):

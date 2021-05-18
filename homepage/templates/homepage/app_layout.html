@@ -1,61 +1,65 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>ClassRater</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <style type="text/css">
+    <title>ClassRater</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/app_layout.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style type="text/css">
     .author, .eom { color: grey }
     .messages {
         background-color:dodgerblue;
         color: white;
         padding: 10px;
       }
-  </style>
+    </style>
 </head>
 <body>
 
 
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="collapsibleNavbar">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="/" style="font-size:16px">ClassRater</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/courses">Courses</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/reviews">Reviews</a>
-      </li>   
-      {% if not user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link" href="/users/sign_in">Sign In</a>
-        </li>
-      {% else %}
-      <li class="nav-item">
-        <a class="nav-link" href="users/sign_out/">Sign Out</a>
-      </li>        
-      {% endif %}
-    </ul>
-    <ul class="nav-item ml-auto">
-      <li>
-        <form class="d-flex" method=GET
-            action={% url 'add_review_search' %}>
-            {% csrf_token %}
-            <input class="form-control me-2" type="search" placeholder="Course Name" aria-label="Search" name="course">
-            <button class="btn btn-outline-success btn-block" type="submit">Start a Review</button>
-        </form>
-      </li>
-    </ul>
-  </div>  
+<nav class="navbar navbar-expand-sm">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/">ClassRater</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/courses">Courses</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/reviews">Reviews</a>
+              </li>   
+              {% if not user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" href="/users/sign_in">Sign In</a>
+                </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="users/sign_out/">Sign Out</a>
+              </li>        
+              {% endif %}
+        </ul>
+        <ul class="nav-item ml-auto">
+            <li>
+                <form class="d-flex" method=GET
+                      action={% url
+                'add_review_search' %}>
+                {% csrf_token %}
+                <input class="form-control me-2 course-search" type="search" placeholder="Course Name"
+                       aria-label="Search" name="course">
+                <button class="btn review-btn btn-block" type="submit">Start a Review</button>
+                </form>
+            </li>
+        </ul>
+    </div>
 </nav>
 
 
@@ -69,13 +73,13 @@
 
 
 <div class="text-center" style="margin-bottom:0">
-{% block content %}
-{% endblock %}
+    {% block content %}
+    {% endblock %}
 </div>
 
 
 <div class="text-center">
-  <p>ClassRater</p>
+    <p>ClassRater</p>
 </div>
 
 </body>

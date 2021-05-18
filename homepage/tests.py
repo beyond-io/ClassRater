@@ -208,6 +208,15 @@ def test_main_feed():
     ids_list = list(result.values_list('id'))
     assert [arg[0] for arg in ids_list] == [4, 2, 5, 1, 3, 6]
 
+
+@pytest.mark.django_db
+def test_landing_feed():
+    result = Review.landing_page_feed()
+    assert isinstance(result, QuerySet)
+    assert all(isinstance(review, Review) for review in result)
+    ids_list = list(result.values_list('id'))
+    assert [arg[0] for arg in ids_list] == [4, 2, 5]
+
 # -----------prerequisites tests----------- #
 
 
