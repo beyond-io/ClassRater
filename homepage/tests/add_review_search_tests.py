@@ -71,6 +71,6 @@ def test_wrong_course_name_with_client(client, sign_in):
 
 @pytest.mark.django_db
 def test_redirect_unsigned_user_to_sign_in_page(client):
-    response = client.get('/add_review_search/', {'course': 'Introduction to Buddhism'})
+    response = client.get('/add_review_search/', {'course': 'UnFogging the Future'})
     assert response.status_code == 302
     assert '/users/sign_in/' in response.url
