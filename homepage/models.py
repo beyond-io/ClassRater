@@ -226,3 +226,7 @@ class Review(models.Model):
     @classmethod
     def main_feed(cls):
         return cls.objects.order_by('-date')
+
+    @classmethod
+    def landing_page_feed(cls):
+        return cls.objects.all().order_by('-date')[:3]
