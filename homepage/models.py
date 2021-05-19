@@ -327,3 +327,8 @@ class User_Likes(models.Model):
             user_like = User_Likes(user_id=user, review_id=review)
             user_like.save()
             review.add_one_like()
+
+    @staticmethod
+    def user_already_posted_review(user_id, course_id):
+        return True if Review.objects.filter(user=user_id, course=course_id) else False
+

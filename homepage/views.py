@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 
 
 def app_layout(request):
@@ -54,19 +55,26 @@ def reviews(request):
     return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews, 'liked_reviews': liked_reviews})
 
 
+@login_required(login_url='/users/sign_in/')
 def add_review(request, course_id):
+    if Review.user_already_posted_review(request.user.id, course_id):
+        messages.error(request, 'You have already posted a review for this course')
+        return redirect(f'/course/{course_id}/')
+
     try:
         course = Course.objects.get(pk=course_id)
     except ObjectDoesNotExist:
-        return redirect('landing')
+        return redirect('/add_review_search/')
 
     if request.method == "POST":
-        form = ReviewForm(request.POST, course=course_id)
+        form = ReviewForm(request.POST, user=request.user.id, course=course_id)
         if form.is_valid():
-            form.save()
-            return redirect('landing')
+            review = form.save()
+            course = Course.objects.get(pk=review.course.course_id)
+            course.update_course_per_review(review.rate, review.course_load, review.content)
+            return redirect(f'/course/{course_id}/')
     else:
-        form = ReviewForm(course=course_id)
+        form = ReviewForm(user=request.user.id, course=course_id)
     return render(request, 'homepage/add_review.html', {'form': form, 'course_name': course.name})
 
 
@@ -88,6 +96,7 @@ def course(request, id):
         return redirect('courses')
 
 
+@login_required(login_url='/users/sign_in/')
 def add_review_search(request):
     if request.method == "GET":
         course_name = request.GET.get('course')
