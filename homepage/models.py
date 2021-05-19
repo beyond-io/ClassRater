@@ -288,3 +288,7 @@ class Review(models.Model):
     @classmethod
     def landing_page_feed(cls):
         return cls.objects.all().order_by('-date')[:3]
+
+    @staticmethod
+    def user_already_posted_review(user_id, course_id):
+        return True if Review.objects.filter(user=user_id, course=course_id) else False

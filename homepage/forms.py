@@ -7,8 +7,10 @@ from django.contrib.auth.models import User
 
 class ReviewForm(ModelForm):
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
         course = kwargs.pop('course')
         super(ReviewForm, self).__init__(*args, **kwargs)
+        self.fields['user'].initial = user
         self.fields['course'].initial = course
         self.fields['professor'].queryset = Professor_to_Course.get_queryset_professors_by_course(course)
 
@@ -17,6 +19,7 @@ class ReviewForm(ModelForm):
         fields = ['course', 'user', 'rate', 'content', 'course_load', 'professor']
         CHOICES = [['', '---'], [1, '1'], [2, '2'], [3, '3'], [4, '4'], [5, '5']]
         widgets = {
+            'user': forms.HiddenInput(),
             'course': forms.HiddenInput(),
             'rate': forms.Select(choices=CHOICES),
             'course_load': forms.Select(choices=CHOICES),

@@ -50,8 +50,7 @@
         <ul class="nav-item ml-auto">
             <li>
                 <form class="d-flex" method=GET
-                      action={% url
-                'add_review_search' %}>
+                      action={% url 'add_review_search' %}>
                 {% csrf_token %}
                 <input class="form-control me-2 course-search" type="search" placeholder="Course Name"
                        aria-label="Search" name="course">
