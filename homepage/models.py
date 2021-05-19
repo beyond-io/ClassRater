@@ -217,6 +217,23 @@ class FollowedUserCourses(models.Model):
         # get only 'course' elements from user_course_pair elements
         return [user_course_pair.course for user_course_pair in pairs]
 
+    @classmethod
+    def is_following_course(cls, user, course):
+        app_user = user.appuser
+        return True if course in cls.get_courses_followed_by_app_user(app_user) else False
+
+    @classmethod
+    def follow_course(cls, user, course):
+        if not cls.is_following_course(user, course):
+            app_user = user.appuser
+            cls(user=app_user, course=course).save()
+
+    @classmethod
+    def un_follow_course(cls, user, course):
+        if cls.is_following_course(user, course):
+            app_user = user.appuser
+            cls.objects.filter(user=app_user, course=course).delete()
+
 
 class Professor(models.Model):
     name = models.CharField(max_length=100)

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review, AppUser
+from homepage.models import Course, Review, AppUser, FollowedUserCourses
 from homepage.forms import FilterForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -140,3 +140,18 @@ def sign_out(request):
     messages.info(request, f'{request.user.username} successfully logged out')
     logout(request)
     return redirect('landing')
+
+
+@login_required(login_url='/users/sign_in/')
+def follow_course_action(request, course_id):
+    course = Course.objects.get(course_id=course_id)
+    is_following_course = FollowedUserCourses.is_following_course(request.user, course)
+
+    if (is_following_course):
+        FollowedUserCourses.un_follow_course(request.user, course)
+        messages.success(request, 'Successfully un-followed this course')
+    else:
+        FollowedUserCourses.follow_course(request.user, course)
+        messages.success(request, 'Successfully followed this course')
+
+    return redirect(f'/course/{course_id}/')
