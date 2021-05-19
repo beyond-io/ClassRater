@@ -53,6 +53,8 @@
                 <a class="followed-link" href="{% url 'course' followed_course.course_id %}">{{ followed_course }} </a>
                 <p style="display:inline">|</p>
                 {% endfor %}
+            {% else %}
+            <p>No Followed Courses For This User</p>
             {% endif %}
         </div>
 
@@ -68,6 +70,12 @@
             {% for review in user_reviews %}
             {% include 'homepage/landing/single_preview.html' with review=review %}
             {% endfor %}
+
+            {% if not user_reviews %}
+            <div onclick="location.href='{% url 'add_review_search' %}'" class="start-review">
+                 Click here to write a review 
+            </div>
+            {% endif %}
         </div>
     </div>
 
