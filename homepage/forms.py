@@ -47,11 +47,11 @@ class SignUpForm(UserCreationForm):
         fields = ("username", "email", "password1", "password2")
 
     def clean_email(self):
-        ACADEMIC_EMAIL_SUB_STRING = '@mta.ac.il'
+        ACADEMIC_EMAIL_SUFFIX = '@mta.ac.il'
         email = self.cleaned_data['email']
 
-        if not email.endswith(ACADEMIC_EMAIL_SUB_STRING):
-            raise forms.ValidationError(f'An academic email should end with {ACADEMIC_EMAIL_SUB_STRING}')
+        if not email.endswith(ACADEMIC_EMAIL_SUFFIX):
+            raise forms.ValidationError(f'An academic email should end with {ACADEMIC_EMAIL_SUFFIX}')
 
         return email
 
