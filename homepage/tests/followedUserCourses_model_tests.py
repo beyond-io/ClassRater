@@ -10,7 +10,7 @@ class TestFollowedUserCourses:
     @pytest.fixture
     def app_users(self):
         app_user0 = AppUser.create_app_user('user0', 'user1@mta.ac.il', '1234')
-        app_user1 = AppUser.create_app_user('user1', 'user2@gmail.com', '1234')
+        app_user1 = AppUser.create_app_user('user1', 'user2@mta.ac.il', '1234')
         app_user_notFollowing = AppUser.create_app_user('user_notFollowing', 'user3@', '9722')
         return (app_user0, app_user1, app_user_notFollowing)
 

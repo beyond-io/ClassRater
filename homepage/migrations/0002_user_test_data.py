@@ -12,9 +12,9 @@ class Migration(migrations.Migration):
         from django.contrib.auth.models import User
 
         users_test_data = [
-            ('testUser1', 'user1@gmail.com', 'password123'),
-            ('testUser2', 'David@gmail.com', 'Password456'),
-            ('testUser3', 'User3@gmail.com', 'User3Password')
+            ('testUser1', 'user1@mta.ac.il', 'password123'),
+            ('testUser2', 'David@mta.ac.il', 'Password456'),
+            ('testUser3', 'User3@mta.ac.il', 'User3Password')
         ]
 
         with transaction.atomic():
