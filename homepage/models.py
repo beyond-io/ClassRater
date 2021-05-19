@@ -297,3 +297,7 @@ class Review(models.Model):
 
         except ObjectDoesNotExist:
             return None
+
+    @staticmethod
+    def user_already_posted_review(user_id, course_id):
+        return True if Review.objects.filter(user=user_id, course=course_id) else False
