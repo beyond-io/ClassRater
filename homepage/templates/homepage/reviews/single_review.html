@@ -39,10 +39,17 @@
             {% endif %}
         </div>
     </div>
-    <div class="row likes-row">
-        <img class="like-btn" src="{% static 'icons/thumb-up.png' %}"> {{review.likes_num}} students found this
-        helpful
+    {% if is_liked %}
+    <div class="row likes-row lit">
+    <img class="like-btn" src="{% static 'icons/thumb-up-lit.png' %}"> You and {{review.likes_num|add:"-1"}} students found this
+    helpful
     </div>
+    {% else %}
+    <div class="row likes-row">
+    <img class="like-btn" src="{% static 'icons/thumb-up.png' %}"> {{review.likes_num}} students found this
+    helpful
+    </div>
+    {% endif %}
     </p>
 </div>
 </body>

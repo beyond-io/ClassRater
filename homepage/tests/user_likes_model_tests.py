@@ -16,16 +16,13 @@ def test_user_likes_list(user_likes_list):
         (1, 1),
         (1, 2),
         (2, 3),
-        (3, 4)
+        (3, 1)
     ]
 
 
 @pytest.mark.django_db
 def test_add_new_user_like():
-    relation = User_Likes(
-        user_id = User.objects.get(pk=3),
-        review_id = Review.objects.get(pk=5)
-    )
+    relation = User_Likes(user_id=User.objects.get(pk=3), review_id=Review.objects.get(pk=5))
     relation.save()
     assert User_Likes.objects.filter(pk=relation.id).exists()
 
@@ -34,16 +31,20 @@ def test_add_new_user_like():
 def test_like_review():
     user = User.objects.get(pk=2)
     review = Review.objects.get(pk=5)
+    likes_num_before = review.likes_num
     User_Likes.toggle_like(user, review)
     assert User_Likes.objects.filter(user_id=user, review_id=review).exists()
+    assert review.likes_num == likes_num_before + 1
 
 
 @pytest.mark.django_db
 def test_dislike_review():
     user = User.objects.get(pk=1)
     review = Review.objects.get(pk=1)
+    likes_num_before = review.likes_num
     User_Likes.toggle_like(user, review)
     assert not User_Likes.objects.filter(user_id=user, review_id=review).exists()
+    assert review.likes_num == likes_num_before - 1
 
 
 @pytest.mark.django_db

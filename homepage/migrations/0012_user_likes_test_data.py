@@ -20,12 +20,12 @@ class Migration(migrations.Migration):
             (User.objects.get(pk=1), Review.objects.get(pk=1)),
             (User.objects.get(pk=1), Review.objects.get(pk=2)),
             (User.objects.get(pk=2), Review.objects.get(pk=3)),
-            (User.objects.get(pk=3), Review.objects.get(pk=4)),
+            (User.objects.get(pk=3), Review.objects.get(pk=1)),
         ]
 
         # testUser1 likes Reviews 1, 2 for course 10111
         # testUser2 likes Review 3 for course 10221
-        # testUser3 likes Review 4 for course 10221
+        # testUser3 likes Review 1 for course 10111
         with transaction.atomic():
             for user, review in likes_test_data:
                 User_Likes(

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review, AppUser
+from homepage.models import Course, Review, AppUser, User_Likes
 from homepage.forms import FilterForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -46,7 +46,8 @@ def courses(request):
 
 def reviews(request):
     reviews = Review.main_feed()
-    return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews})
+    liked_reviews = User_Likes.get_liked_reviews_by_user(request.user)
+    return render(request, 'homepage/reviews/reviews.html', {'user': request.user.id, 'reviews': reviews, 'liked_reviews': liked_reviews})
 
 
 def add_review(request, course_id):
@@ -69,7 +70,13 @@ def course(request, id):
     try:
         course = Course.objects.get(pk=id)
         reviews = Review.objects.filter(course=id).order_by('-likes_num')
-        return render(request, 'homepage/courses/course.html', {'id': id, 'course': course, 'reviews': reviews})
+        liked_reviews = User_Likes.get_liked_reviews_by_user_for_course(request.user, course)
+        return render(request, 'homepage/courses/course.html', {
+        	'id': id,
+        	'course': course,
+        	'reviews': reviews,
+        	'liked_reviews': liked_reviews
+        })
     except ObjectDoesNotExist:
         return redirect('courses')
 
