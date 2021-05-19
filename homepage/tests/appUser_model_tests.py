@@ -9,7 +9,7 @@ class TestAppUser:
     def app_users(self):
         app_user1 = AppUser.create_app_user('user1', 'user1@mta.ac.il', 'useruser222')
         app_user2 = AppUser.create_app_user('user2', 'user2@mta.ac.il', '1234')
-        app_user3 = AppUser.create_app_user('user3', 'user3@gmail.com', '10101010')
+        app_user3 = AppUser.create_app_user('user3', 'user3@mta.ac.il', '10101010')
         return (app_user1, app_user2, app_user3)
 
     # The 3 appUsers created in the fixture above are:
