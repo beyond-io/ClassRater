@@ -1,21 +1,31 @@
+{% extends 'homepage/app_layout.html' %}
+{% load static %}
+{% block content %}
+{% load crispy_forms_tags %}
 <html>
 <head>
 <title>Class Rater Add Review Search</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/add_review_search.css' %}">
 </head>
 
 <body>
-{% extends 'homepage/app_layout.html' %}
-{% block content %}
-<div class="container-fluid text-left pt-5">
-  <div class="row">
-    <div class="col-sm-4">    
+<div class="page-container">
+        <h1>Search Results</h1>
         {% if courses %}
-        <h2>Click on Course to start a review</h2>
-        {% for course in courses %}
-            <a href="{% url 'add_review' course.course_id %}">{{ course }}</a></br>
-        {% endfor %}
+        <div style="margin-top:20px">
+        <h4>Click on Course to start a review!</h4>
+            <div class="results-container">
+                {% for course in courses %}
+                <div class="result-box" id="clickable" onclick="location.href='{% url 'add_review' course.course_id %}'"> 
+                    <a>{{ course }}</a></br>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
         {% else %}
-        <h2>oops! we couldn't find that one "{{ course_name }}"</h2>
+        <div style="margin-top:20px">
+            <h4>oops! we couldn't find that one "{{ course_name }}"</h4>
+        </div>
         {% endif %}
     </div>
   </div>
