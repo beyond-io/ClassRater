@@ -1,0 +1,78 @@
+{% extends 'homepage/app_layout.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+
+    <link rel="stylesheet" href="{% static 'css/my_profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+</head>
+<body>
+    <div class="navbar-top">
+        <div class="title">
+            <h1>Welcome {{ user.username }}</h1>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <div class="card-body">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Email:</td>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>Last Login:</td>
+                            <td>{{ user.last_login }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date Joined:</td>
+                            <td>{{ user.date_joined }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <div class="card-body">
+            <div class="followed-courses">
+                <p>Followed Courses</p>
+            </div>
+        </div>
+
+        <div class="list-followed-courses">
+            {% if user_followed_courses %}
+            <p style="display:inline">|</p>
+                {% for followed_course in user_followed_courses %}
+                <a class="followed-link" href="{% url 'course' followed_course.course_id %}">{{ followed_course }} </a>
+                <p style="display:inline">|</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="card-body"></div>
+            <div class="my-reviews">
+                <p>Last Reviews</p>
+            </div> 
+        </div>  
+    </div>
+
+    <div class="bottom-container" style="margin-top:30px">
+        <div class="reviews-container">
+            {% for review in user_reviews %}
+            {% include 'homepage/landing/single_preview.html' with review=review %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+</body>
+{% endblock %}
+</html>
+

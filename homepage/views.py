@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review, AppUser
+from homepage.models import Course, Review, AppUser, FollowedUserCourses
 from homepage.forms import FilterForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -131,3 +131,15 @@ def sign_out(request):
     messages.info(request, f'{request.user.username} successfully logged out')
     logout(request)
     return redirect('landing')
+
+
+def my_profile(request):
+    try:
+        followed_user_courses = FollowedUserCourses.get_courses_followed_by_app_user(request.user.appuser)
+        last_user_reviews = Review.profile_page_feed(request.user)
+        return render(request, 'homepage/users/my_profile.html', {'user_reviews': last_user_reviews,
+                      'user_followed_courses': followed_user_courses})
+
+    except ObjectDoesNotExist:
+        return render(request, 'homepage/users/my_profile.html', {'user_reviews': None,
+                      'user_followed_courses': None})
