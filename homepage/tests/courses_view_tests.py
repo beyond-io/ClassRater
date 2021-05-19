@@ -96,22 +96,19 @@ def test_get_elective_courses(courses, all_courses):
 @pytest.mark.django_db
 def test_get_courses_with_preq(all_courses):
     courses = Course.get_courses_with_preqs(all_courses)
-    for course in courses:
-        assert course.has_preqs()
+    assert all(course.has_preqs() for course in courses)
 
 
 @pytest.mark.django_db
 def test_get_courses_without_preq(all_courses):
     courses = Course.get_courses_without_preqs(all_courses)
-    for course in courses:
-        assert not course.has_preqs()
+    assert all(not course.has_preqs() for course in courses)
 
 
 @pytest.mark.django_db
 def test_get_courses_with_ratings(all_courses):
     courses = Course.get_courses_with_ratings(all_courses, 5)
-    for course in courses:
-        assert course.num_of_raters >= 5
+    assert all(course.num_of_raters >= 5 for course in courses)
 
 
 # -- testing double filter
@@ -237,16 +234,14 @@ def test_sort_by_rating(all_courses):
     for index in range(len(courses)-1):
         if courses[index].avg_rating is None:
             assert courses[index+1].avg_rating is None
-        else:
-            if courses[index+1].avg_rating is not None:
-                assert Decimal.compare(courses[index].avg_rating, courses[index+1].avg_rating) > -1
+        elif courses[index+1].avg_rating is not None:
+            assert Decimal.compare(courses[index].avg_rating, courses[index+1].avg_rating) > -1
 
 
 @pytest.mark.django_db
 def test_sort_by_load(all_courses):
     courses = list(Course.sort_by_load(all_courses))
     for index in range(len(courses)-1):
-        print(courses[index])
         if courses[index].avg_load is not None:
             assert Decimal.compare(courses[index].avg_load, courses[index+1].avg_load) < 1
 

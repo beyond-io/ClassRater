@@ -187,24 +187,34 @@ class Course(models.Model):
     @staticmethod
     def get_courses_with_preqs(courses):
         # gets all courses that have prerequisites
+        have_preqs = Course.get_courses_with_preqs_ids(courses)
+        return courses.filter(course_id__in=have_preqs)
+
+    @staticmethod
+    def get_courses_with_preqs_ids(courses):
         have_preqs = []
         for course in courses:
             if course.has_preqs():
                 have_preqs.append(course.course_id)
-        return courses.filter(course_id__in=have_preqs)
+        return have_preqs
 
     @staticmethod
     def get_courses_without_preqs(courses):
-        # gets all courses that have prerequisites
+        # gets all courses that don't have prerequisites
+        no_preqs = Course.get_courses_without_preqs_ids(courses)
+        return courses.filter(course_id__in=no_preqs)
+
+    @staticmethod
+    def get_courses_without_preqs_ids(courses):
         no_preqs = []
         for course in courses:
             if not course.has_preqs():
                 no_preqs.append(course.course_id)
-        return courses.filter(course_id__in=no_preqs)
+        return no_preqs
 
     @staticmethod
-    def get_courses_with_ratings(courses, num):
-        return courses.filter(num_of_raters__gte=num)
+    def get_courses_with_ratings(courses, num_of_ratings):
+        return courses.filter(num_of_raters__gte=num_of_ratings)
 
     # --- all available sortings:
     @staticmethod
