@@ -289,6 +289,10 @@ class Review(models.Model):
     def landing_page_feed(cls):
         return cls.objects.all().order_by('-date')[:3]
 
+    @staticmethod
+    def user_already_posted_review(user_id, course_id):
+        return True if Review.objects.filter(user=user_id, course=course_id) else False
+
     def add_one_like(self):
         self.likes_num = self.likes_num + 1
         self.save(update_fields=['likes_num'])
@@ -327,8 +331,3 @@ class User_Likes(models.Model):
             user_like = User_Likes(user_id=user, review_id=review)
             user_like.save()
             review.add_one_like()
-
-    @staticmethod
-    def user_already_posted_review(user_id, course_id):
-        return True if Review.objects.filter(user=user_id, course=course_id) else False
-
