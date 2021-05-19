@@ -15,7 +15,7 @@ class TestSignUp:
     @pytest.mark.parametrize("invalid_user_details", [
         # username cannot be None
         {'username': None, 'email': 'valid@mta.ac.il', 'password1': 'pw123123', 'password2': 'pw123123'},
-        # email must contain @mta.ac.il
+        # email must end with @mta.ac.il
         {'username': 'valid_username', 'email': 'invalid@gmail.com', 'password1': 'pw123123', 'password2': 'pw123123'},
         # password cannot be None
         {'username': 'valid_username', 'email': 'valid@mta.ac.il', 'password1': None, 'password2': None},
