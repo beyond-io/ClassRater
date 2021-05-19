@@ -288,3 +288,32 @@ class Review(models.Model):
     @classmethod
     def landing_page_feed(cls):
         return cls.objects.all().order_by('-date')[:3]
+
+
+class User_Likes(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    review_id = models.ForeignKey(Review, on_delete=models.CASCADE)
+
+    @staticmethod  # returns a list of Review objects
+    def get_liked_reviews_by_user(user):
+        user_likes_list = User_Likes.objects.filter(user_id=user)
+        return [arg.review_id for arg in user_likes_list]
+
+    @staticmethod  # returns a list of Review objects
+    def get_liked_reviews_by_user_for_course(user, course):
+        user_likes_list = User_Likes.objects.filter(user_id=user)
+        return [arg.review_id for arg in user_likes_list if arg.review_id.course == course]
+
+    @staticmethod  # returns a list of User objects
+    def get_users_who_liked_review(review):
+        user_likes_list = User_Likes.objects.filter(review_id=review)
+        return [arg.user_id for arg in user_likes_list]
+
+    @staticmethod 
+    def toggle_like(user, review):
+        user_like = User_Likes.objects.filter(user_id=user, review_id=review)
+        if user_like:
+            user_like.delete()
+        else:
+            user_like = User_Likes(user_id=user, review_id=review)
+            user_like.save()
