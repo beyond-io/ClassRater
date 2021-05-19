@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 
 class ReviewForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        # self.request = kwargs.pop('request')
         user = kwargs.pop('user')
         course = kwargs.pop('course')
         super(ReviewForm, self).__init__(*args, **kwargs)

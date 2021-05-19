@@ -69,7 +69,8 @@ def sign_in(client):
 
 
 @pytest.mark.django_db
-def test_uses_review_form(client, review_details, sign_in):
+@pytest.mark.usefixtures("sign_in")
+def test_uses_review_form(client, review_details):
     course_id = review_details.get('course')
     response = client.get(f'/add_review/{course_id}')
     assert response.status_code == 200
@@ -77,7 +78,8 @@ def test_uses_review_form(client, review_details, sign_in):
 
 
 @pytest.mark.django_db
-def test_post_valid_review_with_client(client, review_details, sign_in):
+@pytest.mark.usefixtures("sign_in")
+def test_post_valid_review_with_client(client, review_details):
     course_id = review_details.get('course')
     response = client.post(f'/add_review/{course_id}', data=review_details)
     assert response.status_code == 302
@@ -85,7 +87,8 @@ def test_post_valid_review_with_client(client, review_details, sign_in):
 
 
 @pytest.mark.django_db
-def test_renders_add_review_template(client, review_details, sign_in):
+@pytest.mark.usefixtures("sign_in")
+def test_renders_add_review_template(client, review_details):
     course_id = review_details.get('course')
     response = client.get(f'/add_review/{course_id}')
     assert response.status_code == 200
@@ -96,13 +99,15 @@ def test_renders_add_review_template(client, review_details, sign_in):
     (10231, 200), (10221, 200), (12357, 200), (666, 302),
 ])
 @pytest.mark.django_db
-def test_add_review_request(client, course_id, excpected_status_code, sign_in):
+@pytest.mark.usefixtures("sign_in")
+def test_add_review_request(client, course_id, excpected_status_code):
     response = client.get(f'/add_review/{course_id}')
     assert response.status_code == excpected_status_code
 
 
 @pytest.mark.django_db
-def test_user_already_posted_review_with_client(client, sign_in):
+@pytest.mark.usefixtures("sign_in")
+def test_user_already_posted_review_with_client(client):
     course_id = 10111
     response = client.get(f'/add_review/{course_id}')
     assert response.status_code == 302
