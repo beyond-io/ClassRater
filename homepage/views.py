@@ -149,6 +149,6 @@ def my_profile(request):
         return render(request, 'homepage/users/my_profile.html', {'user_reviews': last_user_reviews,
                       'user_followed_courses': followed_user_courses})
 
-    except ObjectDoesNotExist:
+    except AppUser.DoesNotExist:
         return render(request, 'homepage/users/my_profile.html', {'user_reviews': None,
                       'user_followed_courses': None})
