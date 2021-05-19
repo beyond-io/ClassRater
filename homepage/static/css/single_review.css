@@ -30,6 +30,10 @@
 	cursor: pointer;
 }
 
+.like-btn.disabled {
+	cursor: default; !important;
+}
+
 .title-row {
 	display: flex;
 	flex-direction: row;

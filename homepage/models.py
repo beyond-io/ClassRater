@@ -289,6 +289,14 @@ class Review(models.Model):
     def landing_page_feed(cls):
         return cls.objects.all().order_by('-date')[:3]
 
+    def add_one_like(self):
+        self.likes_num = self.likes_num + 1
+        self.save(update_fields=['likes_num'])
+
+    def remove_one_like(self):
+        self.likes_num = self.likes_num - 1
+        self.save(update_fields=['likes_num'])
+
 
 class User_Likes(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -309,11 +317,13 @@ class User_Likes(models.Model):
         user_likes_list = User_Likes.objects.filter(review_id=review)
         return [arg.user_id for arg in user_likes_list]
 
-    @staticmethod 
+    @staticmethod
     def toggle_like(user, review):
         user_like = User_Likes.objects.filter(user_id=user, review_id=review)
         if user_like:
             user_like.delete()
+            review.remove_one_like()
         else:
             user_like = User_Likes(user_id=user, review_id=review)
             user_like.save()
+            review.add_one_like()

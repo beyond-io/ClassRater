@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review, AppUser, User_Likes
+from homepage.models import Course, Review, AppUser, User_Likes, User
 from homepage.forms import FilterForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseRedirect
 
 
 def app_layout(request):
@@ -46,8 +47,11 @@ def courses(request):
 
 def reviews(request):
     reviews = Review.main_feed()
-    liked_reviews = User_Likes.get_liked_reviews_by_user(request.user)
-    return render(request, 'homepage/reviews/reviews.html', {'user': request.user.id, 'reviews': reviews, 'liked_reviews': liked_reviews})
+    if(request.user.is_anonymous):
+        liked_reviews = []
+    else:
+        liked_reviews = User_Likes.get_liked_reviews_by_user(request.user)
+    return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews, 'liked_reviews': liked_reviews})
 
 
 def add_review(request, course_id):
@@ -70,12 +74,15 @@ def course(request, id):
     try:
         course = Course.objects.get(pk=id)
         reviews = Review.objects.filter(course=id).order_by('-likes_num')
-        liked_reviews = User_Likes.get_liked_reviews_by_user_for_course(request.user, course)
+        if(request.user.is_anonymous):
+            liked_reviews = []
+        else:
+            liked_reviews = User_Likes.get_liked_reviews_by_user_for_course(request.user, course)
         return render(request, 'homepage/courses/course.html', {
-        	'id': id,
-        	'course': course,
-        	'reviews': reviews,
-        	'liked_reviews': liked_reviews
+            'id': id,
+            'course': course,
+            'reviews': reviews,
+            'liked_reviews': liked_reviews
         })
     except ObjectDoesNotExist:
         return redirect('courses')
@@ -138,3 +145,8 @@ def sign_out(request):
     messages.info(request, f'{request.user.username} successfully logged out')
     logout(request)
     return redirect('landing')
+
+
+def like_review(request, user_id, review_id):
+    User_Likes.toggle_like(User.objects.get(pk=user_id), Review.objects.get(pk=review_id))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  # stay in referring page
