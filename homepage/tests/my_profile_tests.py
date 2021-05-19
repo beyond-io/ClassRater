@@ -19,10 +19,5 @@ class TestMyProfile:
 
     # AnonymousUser is Django's request.user when no user is currently logged in
     def test_anonymous_user_accesses_my_profile(self, client):
-        try:
-            client.get('/users/my_profile/')
-            valid_access = True
-        except AttributeError:
-            valid_access = False
-
-        assert not valid_access
+        response = client.get('/users/my_profile/')
+        assert response.url == ('/users/sign_in/?next=/users/my_profile/')

@@ -142,6 +142,7 @@ def sign_out(request):
     return redirect('landing')
 
 
+@login_required(login_url='/users/sign_in/')
 def my_profile(request):
     try:
         followed_user_courses = FollowedUserCourses.get_courses_followed_by_app_user(request.user.appuser)
