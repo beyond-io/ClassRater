@@ -1,20 +1,25 @@
+{% extends 'homepage/app_layout.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
 <html>
 <head>
 <title>Class Rater Add Review</title>
 </head>
 
 <body>
-{% extends 'homepage/app_layout.html' %}
-{% block content %}
 <div class="container-fluid text-left pt-5">
   <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-4">
       <h2>Add Review - {{ course_name }}</h2>
-      <form method="POST">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <input type="submit" value="Post">
-      </form>
+      <div class="form-group">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div style="margin-top:20px">
+                <input class="btn btn-primary" type="submit" value="Post">
+            </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
