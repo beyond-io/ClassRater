@@ -319,7 +319,7 @@ def test_uses_filter_and_sort_form(client):
 
 # test that invalid filter gives all the courses:
 @pytest.mark.django_db
-def test_invalid_filter_with_Client(all_courses, client):
+def test_invalid_filter_with_client(all_courses, client):
     response = client.get('/courses/', data={'filter_by': 'choice', 'sort_by': 'id'})
     assert response.status_code == 200
     assert list(response.context['all_courses']) == list(all_courses)
@@ -327,13 +327,13 @@ def test_invalid_filter_with_Client(all_courses, client):
 
 # test that the form model reacts to valid input
 @pytest.mark.parametrize("valid_filters", [
-    ('mand'),
-    ('elect'),
-    ('has_preqs'),
-    ('no_preqs'),
-    ('rate_over'),
-    ('load_below'),
-    ('rater_num')
+    'mand',
+    'elect',
+    'has_preqs',
+    'no_preqs',
+    'rate_over',
+    'load_below',
+    'rater_num'
     ])
 @pytest.mark.django_db
 def test_filter_result_with_client(client, valid_filters, filters_to_results):
@@ -343,13 +343,13 @@ def test_filter_result_with_client(client, valid_filters, filters_to_results):
 
 
 @pytest.mark.parametrize("valid_filters", [
-    ('mand'),
-    ('elect'),
-    ('has_preqs'),
-    ('no_preqs'),
-    ('rate_over'),
-    ('load_below'),
-    ('rater_num')
+    'mand',
+    'elect',
+    'has_preqs',
+    'no_preqs',
+    'rate_over',
+    'load_below',
+    'rater_num'
     ])
 @pytest.mark.django_db
 def test_filter_active_with_client(client, valid_filters, filters_to_active):
@@ -368,12 +368,12 @@ def test_invalid_sort_with_client(client, sort_to_result):
 
 # test that the form reacts well to valid sort input
 @pytest.mark.parametrize("valid_sort", [
-    ('id'),
-    ('name'),
-    ('rating'),
-    ('load'),
-    ('num_reviews'),
-    ('num_raters')
+    'id',
+    'name',
+    'rating',
+    'load',
+    'num_reviews',
+    'num_raters'
     ])
 @pytest.mark.django_db
 def test_sorting_result_with_client(client, sort_to_result, valid_sort):
@@ -383,12 +383,12 @@ def test_sorting_result_with_client(client, sort_to_result, valid_sort):
 
 
 @pytest.mark.parametrize("valid_sort", [
-    ('id'),
-    ('name'),
-    ('rating'),
-    ('load'),
-    ('num_reviews'),
-    ('num_raters')
+    'id',
+    'name',
+    'rating',
+    'load',
+    'num_reviews',
+    'num_raters'
     ])
 @pytest.mark.django_db
 def test_sorting_active_with_client(client, sort_to_active, valid_sort):

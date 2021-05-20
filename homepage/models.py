@@ -192,11 +192,7 @@ class Course(models.Model):
 
     @staticmethod
     def get_courses_with_preqs_ids(courses):
-        have_preqs = []
-        for course in courses:
-            if course.has_preqs():
-                have_preqs.append(course.course_id)
-        return have_preqs
+        return [course.course_id for course in courses if course.has_preqs()]
 
     @staticmethod
     def get_courses_without_preqs(courses):
@@ -206,11 +202,7 @@ class Course(models.Model):
 
     @staticmethod
     def get_courses_without_preqs_ids(courses):
-        no_preqs = []
-        for course in courses:
-            if not course.has_preqs():
-                no_preqs.append(course.course_id)
-        return no_preqs
+        return [course.course_id for course in courses if not course.has_preqs()]
 
     @staticmethod
     def get_courses_with_ratings(courses, num_of_ratings):
