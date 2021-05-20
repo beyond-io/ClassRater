@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 @pytest.mark.django_db
-class TestMyProfile:
+class TestFollowCourse:
 
     @pytest.fixture
     def followed_course_pair(self):
