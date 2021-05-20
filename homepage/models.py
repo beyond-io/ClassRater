@@ -99,12 +99,71 @@ class Course(models.Model):
         return (self.course_id, self.name, self.mandatory, self.credit_points, self.syllabi,
                 self.avg_load, self.avg_rating, self.num_of_raters, self.num_of_reviewers)
 
+    # --- returns if course has Prerequisites
+    def has_preqs(self):
+        return Prerequisites.does_course_have_prerequisites(self)
+
     # --- returns all Course objects - the main 'courses' source for the view
     @staticmethod
     def get_courses():
         return Course.objects.all()
 
-    # --- get filtered course list by rating/load/mandatory/elective  - return QuerySets
+    # --- filters 'curr_courses' and returns the result according to 'filters'
+    @staticmethod
+    def get_filtered_courses(curr_courses, filters):
+        active_filters = []
+        for filter in filters:
+            if(filter == 'mand'):
+                curr_courses = Course.get_mandatory_courses(curr_courses)
+                active_filters.append('mandatory')
+            elif(filter == 'elect'):
+                curr_courses = Course.get_elective_courses(curr_courses)
+                active_filters.append('elective')
+            elif(filter == 'load_below'):
+                curr_courses = Course.get_filtered_courses_by_load(3.5, curr_courses)
+                active_filters.append('course load under 3.5')
+            elif(filter == 'rate_over'):
+                curr_courses = Course.get_filtered_courses_by_rating(3.5, curr_courses)
+                active_filters.append('course rating over 3.5')
+            elif(filter == 'has_preqs'):
+                curr_courses = Course.get_courses_with_preqs(curr_courses)
+                active_filters.append('with prerequisites')
+            elif(filter == 'no_preqs'):
+                curr_courses = Course.get_courses_without_preqs(curr_courses)
+                active_filters.append('without prerequisites')
+            elif(filter == 'rater_num'):
+                curr_courses = Course.get_courses_with_ratings(curr_courses, 5)
+                active_filters.append('at least 5 raters')
+
+        return {'result': curr_courses, 'active': active_filters}
+
+    # --- sorts 'curr_courses' and return the result according to 'sort_val'
+    @staticmethod
+    def get_sorted_courses(curr_courses, sort_val):
+        current_sorting = ''
+        if(sort_val == 'name'):
+            curr_courses = Course.sort_by_name(curr_courses)
+            current_sorting = 'name'
+        elif(sort_val == 'id'):
+            curr_courses = Course.sort_by_id(curr_courses)
+            current_sorting = 'identifier'
+        elif(sort_val == 'rating'):
+            curr_courses = Course.sort_by_rating(curr_courses)
+            current_sorting = 'course rating'
+        elif(sort_val == 'load'):
+            curr_courses = Course.sort_by_load(curr_courses)
+            current_sorting = 'course load'
+        elif(sort_val == 'num_reviews'):
+            curr_courses = Course.sort_by_num_reviews(curr_courses)
+            current_sorting = 'number of reviews'
+        elif(sort_val == 'num_raters'):
+            curr_courses = Course.sort_by_num_raters(curr_courses)
+            current_sorting = 'number of raters'
+
+        return {'result': curr_courses, 'active': current_sorting}
+
+    # --- all available filters:
+    # get filtered course list by rating/load/mandatory/elective/prerequisites/num_of_Raters  - return QuerySets
     @staticmethod
     def get_filtered_courses_by_rating(rating, courses):
         # gets all courses with average rating >= rating
@@ -125,10 +184,56 @@ class Course(models.Model):
         # gets all courses that are electives
         return courses.filter(mandatory=False)
 
-    # --- returns if course has Prerequisites
-    def has_preqs(self):
-        return Prerequisites.does_course_have_prerequisites(self)
+    @staticmethod
+    def get_courses_with_preqs(courses):
+        # gets all courses that have prerequisites
+        have_preqs = Course.get_courses_with_preqs_ids(courses)
+        return courses.filter(course_id__in=have_preqs)
 
+    @staticmethod
+    def get_courses_with_preqs_ids(courses):
+        return [course.course_id for course in courses if course.has_preqs()]
+
+    @staticmethod
+    def get_courses_without_preqs(courses):
+        # gets all courses that don't have prerequisites
+        no_preqs = Course.get_courses_without_preqs_ids(courses)
+        return courses.filter(course_id__in=no_preqs)
+
+    @staticmethod
+    def get_courses_without_preqs_ids(courses):
+        return [course.course_id for course in courses if not course.has_preqs()]
+
+    @staticmethod
+    def get_courses_with_ratings(courses, num_of_ratings):
+        return courses.filter(num_of_raters__gte=num_of_ratings)
+
+    # --- all available sortings:
+    @staticmethod
+    def sort_by_name(courses):
+        return courses.order_by('name')
+
+    @staticmethod
+    def sort_by_id(courses):
+        return courses.order_by('course_id')
+
+    @staticmethod
+    def sort_by_rating(courses):
+        return courses.order_by('-avg_rating')
+
+    @staticmethod
+    def sort_by_load(courses):
+        return courses.order_by('avg_load')
+
+    @staticmethod
+    def sort_by_num_reviews(courses):
+        return courses.order_by('-num_of_reviewers')
+
+    @staticmethod
+    def sort_by_num_raters(courses):
+        return courses.order_by('-num_of_raters')
+
+    # --- search methods:
     @staticmethod
     def get_courses_ordered_by_name(name):
         return Course.objects.filter(name__contains=name).order_by('name')
