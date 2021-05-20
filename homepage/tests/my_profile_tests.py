@@ -55,6 +55,6 @@ class TestMyProfile:
         assert all(course in user_profile_followed_courses for course in followed_courses)
 
     def test_profile_page_no_followed_courses(self, client, signed_in_app_user):
-        # Delete all user followed courses, then check that profile page has no reviews
+        # Delete all user followed courses, then check that profile page has no followed courses
         FollowedUserCourses.objects.filter(user=signed_in_app_user).delete()
         assert not client.get('/users/my_profile/').context['user_followed_courses']
