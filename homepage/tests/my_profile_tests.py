@@ -37,11 +37,23 @@ class TestMyProfile:
         response = client.get('/users/my_profile/')
         assert response.url == ('/users/sign_in/?next=/users/my_profile/')
 
-    def test_profile_page_reviews(self, client, sign_in, user_profile_reviews):
+    def test_profile_page_reviews(self, sign_in, user_profile_reviews):
         user_reviews = Review.profile_page_feed(sign_in.wsgi_request.user)
         assert all(review in user_profile_reviews for review in user_reviews)
 
-    def test_profile_page_followed_courses(self, client, sign_in, user_profile_followed_courses):
+    def test_profile_page_no_reviews(self, client, sign_in):
+        # Delete all user reviews, then check that profile page has no reviews
+        app_user = AppUser.get_app_user(sign_in.wsgi_request.user.username)
+        Review.objects.filter(user=app_user).delete()
+        assert not client.get('/users/my_profile/').context['user_reviews']
+
+    def test_profile_page_followed_courses(self, sign_in, user_profile_followed_courses):
         app_user = AppUser.get_app_user(sign_in.wsgi_request.user.username)
         followed_courses = FollowedUserCourses.get_courses_followed_by_app_user(app_user)
         assert all(course in user_profile_followed_courses for course in followed_courses)
+
+    def test_profile_page_no_followed_courses(self, client, sign_in, user_profile_reviews):
+        # Delete all user followed courses, then check that profile page has no followed coruses
+        app_user = AppUser.get_app_user(sign_in.wsgi_request.user.username)
+        FollowedUserCourses.objects.filter(user=app_user).delete()
+        assert not client.get('/users/my_profile/').context['user_followed_courses']
