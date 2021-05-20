@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review, AppUser, UserLikes, User
-from homepage.forms import FilterForm, ReviewForm, SignUpForm
+from homepage.models import Course, Review, AppUser, UserLikes, User, FollowedUserCourses
+from homepage.forms import FilterAndSortForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -21,28 +21,22 @@ def landing(request):
 def courses(request):
     all_courses = Course.get_courses()
     filters_active = []
-    if request.method == "POST":
-        form = FilterForm(request.POST)
+    sort_active = ''
+    if request.method == "GET":
+        form = FilterAndSortForm(request.GET)
         if form.is_valid():
             filters = form.cleaned_data.get('filter_by')
-            for filter in filters:
-                if(filter == 'mand'):
-                    all_courses = Course.get_mandatory_courses(all_courses)
-                    filters_active.append('mandatory')
-                elif(filter == 'elect'):
-                    all_courses = Course.get_elective_courses(all_courses)
-                    filters_active.append('elective')
-                elif(filter == 'load_below'):
-                    all_courses = Course.get_filtered_courses_by_load(3.5, all_courses)
-                    filters_active.append('course load under 3.5')
-                elif(filter == 'rate_over'):
-                    all_courses = Course.get_filtered_courses_by_rating(3.5, all_courses)
-                    filters_active.append('course rating over 3.5')
+            sort_val = form.cleaned_data.get('sort_by')
+            sort_result = Course.get_sorted_courses(all_courses, sort_val)
+            filter_result = Course.get_filtered_courses(sort_result['result'], filters)
+            all_courses = filter_result['result']
+            filters_active = filter_result['active']
+            sort_active = sort_result['active']
     else:
-        form = FilterForm()
+        form = FilterAndSortForm()
 
-    context = {'all_courses': all_courses, 'filters': filters_active}
-    context['form'] = FilterForm()
+    context = {'all_courses': all_courses, 'filters': filters_active, 'sort': sort_active}
+    context['form'] = form
     return render(request, 'homepage/courses/courses.html', context)
 
 
@@ -164,3 +158,16 @@ def like_review(request, user_id, review_id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  # stay in referring page
     except ObjectDoesNotExist:
         return redirect('landing')
+
+
+@login_required(login_url='/users/sign_in/')
+def my_profile(request):
+    try:
+        followed_user_courses = FollowedUserCourses.get_courses_followed_by_app_user(request.user.appuser)
+        last_user_reviews = Review.profile_page_feed(request.user)
+        return render(request, 'homepage/users/my_profile.html', {'user_reviews': last_user_reviews,
+                      'user_followed_courses': followed_user_courses})
+
+    except AppUser.DoesNotExist:
+        return render(request, 'homepage/users/my_profile.html', {'user_reviews': None,
+                      'user_followed_courses': None})

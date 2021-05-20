@@ -31,5 +31,5 @@ urlpatterns = [
     path('users/sign_in/', views.sign_in, name='sign_in'),
     path('users/sign_out/', views.sign_out, name='sign_out'),
     path('like/<user_id>/<review_id>/', views.like_review, name='like_review'),
-
+    path('users/my_profile/', views.my_profile, name='my_profile'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

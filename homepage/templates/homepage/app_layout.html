@@ -12,11 +12,14 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style type="text/css">
     .author, .eom { color: grey }
-    .messages {
-        background-color:dodgerblue;
-        color: white;
+     .messages {
+        font-size: 22px;
+        background-color:LightSteelBlue; 
+        text-shadow: 1px 1px 2px black;
+        color: white; 
         padding: 10px;
-      }
+        margin: 0px;
+      } 
     </style>
 </head>
 <body>
@@ -43,8 +46,11 @@
                 </li>
               {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="users/sign_out/">Sign Out</a>
+                    <a class="nav-link" href="/users/my_profile/">My Profile</a>
                 </li>        
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/sign_out/">Sign Out</a>
+                </li>  
               {% endif %}
         </ul>
         <ul class="nav-item ml-auto">
