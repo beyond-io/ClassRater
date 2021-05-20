@@ -58,7 +58,7 @@
             <div class="buttons-row">
                 <button class="course-btn">Syllabi</button>
                 <button class="course-btn" onclick="location.href='{% url 'add_review' course.course_id %}'">Add Review</button>
-                <button class="course-btn">Follow Course</button>
+                <button class="course-btn" onclick="location.href='{% url 'follow_course_action' course.course_id %}'">Follow Course</button>
             </div>
         </div>
     </div>

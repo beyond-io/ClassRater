@@ -161,6 +161,24 @@ def like_review(request, user_id, review_id):
 
 
 @login_required(login_url='/users/sign_in/')
+def follow_course_action(request, course_id):
+    try:
+        course = Course.objects.get(course_id=course_id)
+    except ObjectDoesNotExist:
+        return redirect('/courses/')
+
+    is_following_course = FollowedUserCourses.is_following_course(request.user, course)
+    if (is_following_course):
+        FollowedUserCourses.unfollow_course(request.user, course)
+        messages.success(request, 'Successfully unfollowed this course')
+    else:
+        FollowedUserCourses.follow_course(request.user, course)
+        messages.success(request, 'Successfully followed this course')
+
+    return redirect(f'/course/{course_id}/')
+
+
+@login_required(login_url='/users/sign_in/')
 def my_profile(request):
     try:
         followed_user_courses = FollowedUserCourses.get_courses_followed_by_app_user(request.user.appuser)
