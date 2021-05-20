@@ -13,7 +13,11 @@
     <div style="margin-top:30px">
         <div class="reviews-container">
             {% for review in reviews %}
-            {% include './single_review.html' with review=review %}
+            {% if review in liked_reviews %}
+            {% include './single_review.html' with review=review is_liked=True %}
+            {% else %}
+            {% include './single_review.html' with review=review is_liked=False %}
+            {% endif %}
             {% endfor %}
         </div>
     </div>

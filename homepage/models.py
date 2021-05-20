@@ -405,3 +405,42 @@ class Review(models.Model):
     @staticmethod
     def user_already_posted_review(user_id, course_id):
         return True if Review.objects.filter(user=user_id, course=course_id) else False
+
+    def add_like(self):
+        self.likes_num += 1
+        self.save(update_fields=['likes_num'])
+
+    def remove_like(self):
+        self.likes_num -= 1
+        self.save(update_fields=['likes_num'])
+
+
+class UserLikes(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    review_id = models.ForeignKey(Review, on_delete=models.CASCADE)
+
+    @staticmethod  # returns a list of Review objects
+    def get_liked_reviews_by_user(user):
+        user_likes_list = UserLikes.objects.filter(user_id=user)
+        return [arg.review_id for arg in user_likes_list]
+
+    @staticmethod  # returns a list of Review objects
+    def get_liked_reviews_by_user_for_course(user, course):
+        user_likes_list = UserLikes.objects.filter(user_id=user)
+        return [arg.review_id for arg in user_likes_list if arg.review_id.course == course]
+
+    @staticmethod  # returns a list of User objects
+    def get_users_who_liked_review(review):
+        user_likes_list = UserLikes.objects.filter(review_id=review)
+        return [arg.user_id for arg in user_likes_list]
+
+    @staticmethod
+    def toggle_like(user, review):
+        user_like = UserLikes.objects.filter(user_id=user, review_id=review)
+        if user_like:
+            user_like.delete()
+            review.remove_like()
+        else:
+            user_like = UserLikes(user_id=user, review_id=review)
+            user_like.save()
+            review.add_like()

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review, AppUser, FollowedUserCourses
+from homepage.models import Course, Review, AppUser, UserLikes, User, FollowedUserCourses
 from homepage.forms import FilterAndSortForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
 
@@ -41,7 +42,10 @@ def courses(request):
 
 def reviews(request):
     reviews = Review.main_feed()
-    return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews})
+    liked_reviews = []
+    if not request.user.is_anonymous:
+        liked_reviews = UserLikes.get_liked_reviews_by_user(request.user)
+    return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews, 'liked_reviews': liked_reviews})
 
 
 @login_required(login_url='/users/sign_in/')
@@ -71,7 +75,15 @@ def course(request, id):
     try:
         course = Course.objects.get(pk=id)
         reviews = Review.objects.filter(course=id).order_by('-likes_num')
-        return render(request, 'homepage/courses/course.html', {'id': id, 'course': course, 'reviews': reviews})
+        liked_reviews = []
+        if not request.user.is_anonymous:
+            liked_reviews = UserLikes.get_liked_reviews_by_user_for_course(request.user, course)
+        return render(request, 'homepage/courses/course.html', {
+            'id': id,
+            'course': course,
+            'reviews': reviews,
+            'liked_reviews': liked_reviews
+        })
     except ObjectDoesNotExist:
         return redirect('courses')
 
@@ -134,6 +146,18 @@ def sign_out(request):
     messages.info(request, f'{request.user.username} successfully logged out')
     logout(request)
     return redirect('landing')
+
+
+def like_review(request, user_id, review_id):
+    if request.META.get('HTTP_REFERER') is None:
+        return redirect('landing')
+    try:
+        user = User.objects.get(pk=user_id)
+        review = Review.objects.get(pk=review_id)
+        UserLikes.toggle_like(user, review)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  # stay in referring page
+    except ObjectDoesNotExist:
+        return redirect('landing')
 
 
 @login_required(login_url='/users/sign_in/')

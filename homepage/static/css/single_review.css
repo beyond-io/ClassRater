@@ -20,9 +20,18 @@
 	margin-top: 10px;
 }
 
+.lit {
+	text-shadow: 2px 2px 8px #31e7f7;
+}
+
 .like-btn {
 	margin-left: 10px;
 	margin-right: 10px;
+	cursor: pointer;
+}
+
+.like-btn.disabled {
+	cursor: default; !important;
 }
 
 .title-row {
