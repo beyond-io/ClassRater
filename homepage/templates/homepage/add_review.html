@@ -1,26 +1,26 @@
 {% extends 'homepage/app_layout.html' %}
 {% block content %}
 {% load crispy_forms_tags %}
+{% load static %}
 <html>
 <head>
 <title>Class Rater Add Review</title>
+<link rel="stylesheet" href="{% static 'css/add_review.css' %}">
 </head>
 
 <body>
-<div class="container-fluid text-left pt-5">
-  <div class="row">
-    <div class="col-sm-4">
-      <h2>Add Review - {{ course_name }}</h2>
-      <div class="form-group">
+<div class="container-fluid text-left pt-5 form-container">
+    <div class="col-sm-4 form-column">
+      <h2 class="course-name">Add Review - {{ course_name }}</h2>
+      <div class="form-group review-form">
         <form method="POST">
             {% csrf_token %}
             {{ form|crispy }}
-            <div style="margin-top:20px">
-                <input class="btn btn-primary" type="submit" value="Post">
+            <div class="button-row" style="margin-top:20px">
+                <input class="btn btn-primary post-btn" type="submit" value="Post">
             </div>
         </form>
       </div>
-    </div>
   </div>
 </div>
 {% endblock %}
