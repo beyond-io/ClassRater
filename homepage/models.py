@@ -334,7 +334,7 @@ class FollowedUserCourses(models.Model):
             cls(user=app_user, course=course).save()
 
     @classmethod
-    def un_follow_course(cls, user, course):
+    def unfollow_course(cls, user, course):
         if cls.is_following_course(user, course):
             app_user = user.appuser
             cls.objects.filter(user=app_user, course=course).delete()

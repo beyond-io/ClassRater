@@ -138,12 +138,15 @@ def sign_out(request):
 
 @login_required(login_url='/users/sign_in/')
 def follow_course_action(request, course_id):
-    course = Course.objects.get(course_id=course_id)
-    is_following_course = FollowedUserCourses.is_following_course(request.user, course)
+    try:
+        course = Course.objects.get(course_id=course_id)
+    except ObjectDoesNotExist:
+        return redirect('/courses/')
 
+    is_following_course = FollowedUserCourses.is_following_course(request.user, course)
     if (is_following_course):
-        FollowedUserCourses.un_follow_course(request.user, course)
-        messages.success(request, 'Successfully un-followed this course')
+        FollowedUserCourses.unfollow_course(request.user, course)
+        messages.success(request, 'Successfully unfollowed this course')
     else:
         FollowedUserCourses.follow_course(request.user, course)
         messages.success(request, 'Successfully followed this course')
