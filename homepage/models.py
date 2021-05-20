@@ -324,7 +324,7 @@ class FollowedUserCourses(models.Model):
 
     @classmethod
     def is_following_course(cls, user, course):
-        return True if course in cls.get_courses_followed_by_app_user(user.appuser) else False
+        return course in cls.get_courses_followed_by_app_user(user.appuser)
 
     @classmethod
     def follow_course(cls, user, course):
