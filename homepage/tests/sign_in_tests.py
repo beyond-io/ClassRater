@@ -10,7 +10,7 @@ class TestSignIn:
 
     @pytest.fixture
     def signed_up_details(self):
-        User.objects.create_user(username='valid_username', email='valid@email.com', password='pw123123')
+        User.objects.create_user(username='valid_username', email='valid@mta.ac.il', password='pw123123')
         return ['valid_username', 'pw123123']
 
     @pytest.fixture

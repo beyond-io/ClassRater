@@ -7,7 +7,7 @@ class TestSignOut:
 
     @pytest.fixture
     def sign_in_user(self, client):
-        User.objects.create_user(username='valid_username', email='valid@email.com', password='pw123123')
+        User.objects.create_user(username='valid_username', email='valid@mta.ac.il', password='pw123123')
         client.post('/users/sign_in/', data={'username': 'valid_username2', 'password': 'pw123123'})
 
     def test_sign_out_user_with_client(self, client, sign_in_user):
