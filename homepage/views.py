@@ -149,3 +149,16 @@ def follow_course_action(request, course_id):
         messages.success(request, 'Successfully followed this course')
 
     return redirect(f'/course/{course_id}/')
+
+
+@login_required(login_url='/users/sign_in/')
+def my_profile(request):
+    try:
+        followed_user_courses = FollowedUserCourses.get_courses_followed_by_app_user(request.user.appuser)
+        last_user_reviews = Review.profile_page_feed(request.user)
+        return render(request, 'homepage/users/my_profile.html', {'user_reviews': last_user_reviews,
+                      'user_followed_courses': followed_user_courses})
+
+    except AppUser.DoesNotExist:
+        return render(request, 'homepage/users/my_profile.html', {'user_reviews': None,
+                      'user_followed_courses': None})

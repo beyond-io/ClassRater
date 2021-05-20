@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.contrib.auth.models import User
 
 
@@ -410,6 +410,14 @@ class Review(models.Model):
     @classmethod
     def landing_page_feed(cls):
         return cls.objects.all().order_by('-date')[:3]
+
+    @classmethod
+    def profile_page_feed(cls, user):
+        try:
+            app_user = user.appuser
+            return cls.objects.filter(user=app_user).order_by('-date')[:3]
+        except ObjectDoesNotExist:
+            return None
 
     @staticmethod
     def user_already_posted_review(user_id, course_id):

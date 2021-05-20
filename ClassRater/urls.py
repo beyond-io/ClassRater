@@ -30,6 +30,7 @@ urlpatterns = [
     path('users/sign_up/', views.sign_up, name='sign_up'),
     path('users/sign_in/', views.sign_in, name='sign_in'),
     path('users/sign_out/', views.sign_out, name='sign_out'),
+    path('users/my_profile/', views.my_profile, name='my_profile'),
     path('course/<course_id>/follow_course_action', views.follow_course_action, name='follow_course_action'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
