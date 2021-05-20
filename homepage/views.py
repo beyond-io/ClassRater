@@ -48,9 +48,8 @@ def courses(request):
 
 def reviews(request):
     reviews = Review.main_feed()
-    if (request.user.is_anonymous):
-        liked_reviews = []
-    else:
+    liked_reviews = []
+    if not request.user.is_anonymous:
         liked_reviews = UserLikes.get_liked_reviews_by_user(request.user)
     return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews, 'liked_reviews': liked_reviews})
 
@@ -82,9 +81,8 @@ def course(request, id):
     try:
         course = Course.objects.get(pk=id)
         reviews = Review.objects.filter(course=id).order_by('-likes_num')
-        if(request.user.is_anonymous):
-            liked_reviews = []
-        else:
+        liked_reviews = []
+        if not request.user.is_anonymous:
             liked_reviews = UserLikes.get_liked_reviews_by_user_for_course(request.user, course)
         return render(request, 'homepage/courses/course.html', {
             'id': id,

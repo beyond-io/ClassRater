@@ -28,9 +28,7 @@ class Migration(migrations.Migration):
         # testUser3 likes Review 1 for course 10111
         with transaction.atomic():
             for user, review in likes_test_data:
-                UserLikes(
-                    user_id=user,
-                    review_id=review).save()
+                UserLikes(user_id=user, review_id=review).save()
 
     operations = [
         migrations.RunPython(generate_data),

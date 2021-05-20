@@ -4,9 +4,7 @@ from homepage.models import User, Review, UserLikes, Course
 
 @pytest.fixture
 def user_likes_list():
-    return list(UserLikes.objects.values_list(
-        'user_id',
-        'review_id'))
+    return list(UserLikes.objects.values_list('user_id', 'review_id'))
 
 
 @pytest.mark.django_db

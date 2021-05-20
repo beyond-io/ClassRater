@@ -294,11 +294,11 @@ class Review(models.Model):
         return True if Review.objects.filter(user=user_id, course=course_id) else False
 
     def add_like(self):
-        self.likes_num = self.likes_num + 1
+        self.likes_num += 1
         self.save(update_fields=['likes_num'])
 
     def remove_like(self):
-        self.likes_num = self.likes_num - 1
+        self.likes_num -= 1
         self.save(update_fields=['likes_num'])
 
 
