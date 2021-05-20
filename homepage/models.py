@@ -294,7 +294,6 @@ class Review(models.Model):
         try:
             app_user = user.appuser
             return cls.objects.filter(user=app_user).order_by('-date')[:3]
-
         except ObjectDoesNotExist:
             return None
 

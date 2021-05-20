@@ -15,6 +15,10 @@ class TestMyProfile:
         return client.post('/users/sign_in/', data=signed_up_user_details)
 
     @pytest.fixture
+    def signed_in_app_user(self, sign_in):
+        return AppUser.get_app_user(sign_in.wsgi_request.user.username)
+
+    @pytest.fixture
     def user_profile_followed_courses(self, client, sign_in):
         response = client.get('/users/my_profile/')
         return response.context['user_followed_courses']
@@ -41,19 +45,16 @@ class TestMyProfile:
         user_reviews = Review.profile_page_feed(sign_in.wsgi_request.user)
         assert all(review in user_profile_reviews for review in user_reviews)
 
-    def test_profile_page_no_reviews(self, client, sign_in):
+    def test_profile_page_no_reviews(self, client, signed_in_app_user):
         # Delete all user reviews, then check that profile page has no reviews
-        app_user = AppUser.get_app_user(sign_in.wsgi_request.user.username)
-        Review.objects.filter(user=app_user).delete()
+        Review.objects.filter(user=signed_in_app_user).delete()
         assert not client.get('/users/my_profile/').context['user_reviews']
 
-    def test_profile_page_followed_courses(self, sign_in, user_profile_followed_courses):
-        app_user = AppUser.get_app_user(sign_in.wsgi_request.user.username)
-        followed_courses = FollowedUserCourses.get_courses_followed_by_app_user(app_user)
+    def test_profile_page_followed_courses(self, user_profile_followed_courses, signed_in_app_user):
+        followed_courses = FollowedUserCourses.get_courses_followed_by_app_user(signed_in_app_user)
         assert all(course in user_profile_followed_courses for course in followed_courses)
 
-    def test_profile_page_no_followed_courses(self, client, sign_in, user_profile_reviews):
-        # Delete all user followed courses, then check that profile page has no followed coruses
-        app_user = AppUser.get_app_user(sign_in.wsgi_request.user.username)
-        FollowedUserCourses.objects.filter(user=app_user).delete()
+    def test_profile_page_no_followed_courses(self, client, signed_in_app_user):
+        # Delete all user followed courses, then check that profile page has no reviews
+        FollowedUserCourses.objects.filter(user=signed_in_app_user).delete()
         assert not client.get('/users/my_profile/').context['user_followed_courses']
