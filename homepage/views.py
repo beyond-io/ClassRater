@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review, AppUser, User_Likes, User
+from homepage.models import Course, Review, AppUser, UserLikes, User
 from homepage.forms import FilterForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -48,10 +48,10 @@ def courses(request):
 
 def reviews(request):
     reviews = Review.main_feed()
-    if(request.user.is_anonymous):
+    if (request.user.is_anonymous):
         liked_reviews = []
     else:
-        liked_reviews = User_Likes.get_liked_reviews_by_user(request.user)
+        liked_reviews = UserLikes.get_liked_reviews_by_user(request.user)
     return render(request, 'homepage/reviews/reviews.html', {'reviews': reviews, 'liked_reviews': liked_reviews})
 
 
@@ -85,7 +85,7 @@ def course(request, id):
         if(request.user.is_anonymous):
             liked_reviews = []
         else:
-            liked_reviews = User_Likes.get_liked_reviews_by_user_for_course(request.user, course)
+            liked_reviews = UserLikes.get_liked_reviews_by_user_for_course(request.user, course)
         return render(request, 'homepage/courses/course.html', {
             'id': id,
             'course': course,
@@ -157,5 +157,12 @@ def sign_out(request):
 
 
 def like_review(request, user_id, review_id):
-    User_Likes.toggle_like(User.objects.get(pk=user_id), Review.objects.get(pk=review_id))
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  # stay in referring page
+    if (request.META.get('HTTP_REFERER') == None):
+        return redirect('landing')
+    try:
+        user = User.objects.get(pk=user_id)
+        review = Review.objects.get(pk=review_id)
+        UserLikes.toggle_like(user, review)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  # stay in referring page
+    except ObjectDoesNotExist:
+        return redirect('landing')

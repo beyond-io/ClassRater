@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     ]
 
     def generate_data(apps, schema_editor):
-        from homepage.models import User_Likes
+        from homepage.models import UserLikes
         from homepage.models import Review
         from homepage.models import User
 
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         # testUser3 likes Review 1 for course 10111
         with transaction.atomic():
             for user, review in likes_test_data:
-                User_Likes(
+                UserLikes(
                     user_id=user,
                     review_id=review).save()
 
