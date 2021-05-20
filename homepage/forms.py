@@ -21,8 +21,10 @@ class ReviewForm(ModelForm):
         widgets = {
             'user': forms.HiddenInput(),
             'course': forms.HiddenInput(),
-            'rate': forms.Select(choices=CHOICES),
-            'course_load': forms.Select(choices=CHOICES),
+            'rate': forms.Select(choices=CHOICES, attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter your review here'}),
+            'course_load': forms.Select(choices=CHOICES, attrs={'class': 'form-control'}),
+            'professor': forms.Select(attrs={'class': 'form-control'}),
         }
 
 
