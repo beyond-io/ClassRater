@@ -157,7 +157,7 @@ def sign_out(request):
 
 
 def like_review(request, user_id, review_id):
-    if (request.META.get('HTTP_REFERER') == None):
+    if request.META.get('HTTP_REFERER') is None:
         return redirect('landing')
     try:
         user = User.objects.get(pk=user_id)

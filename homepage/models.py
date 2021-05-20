@@ -323,7 +323,6 @@ class UserLikes(models.Model):
 
     @staticmethod
     def toggle_like(user, review):
-        print(f"got to toggle_like function in models with {{user}} and {{review.id}}")
         user_like = UserLikes.objects.filter(user_id=user, review_id=review)
         if user_like:
             user_like.delete()
