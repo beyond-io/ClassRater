@@ -55,9 +55,32 @@
                     </div>
                 </div>
             </div>
+            <div class="preq-rows">
+                {% for preq in preq %}
+                <div class="preq-row">
+                    {% if preq.req_code == -1 %}
+                    - Cannot be taken if 
+                    <a href="{% url 'course' preq.req_course_id.course_id %}">{{preq.req_course_id.name}}</a>
+                     was taken -
+                    {% else %}
+                    - Has to be taken 
+                    {% if preq.req_code == 1 %}
+                    after
+                    {% elif preq.req_code == 0 %}
+                    with
+                    {% endif %}
+                    <a href="{% url 'course' preq.req_course_id.course_id %}">{{preq.req_course_id.name}}</a> -
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
             <div class="buttons-row">
                 <button class="course-btn" onclick="location.href='{% url 'add_review' course.course_id %}'">Add Review</button>
+                {% if is_following %}
+                <button class="course-btn" onclick="location.href='{% url 'follow_course_action' course.course_id %}'">Unfollow Course</button>
+                {% else %}
                 <button class="course-btn" onclick="location.href='{% url 'follow_course_action' course.course_id %}'">Follow Course</button>
+                {% endif %}
             </div>
         </div>
     </div>

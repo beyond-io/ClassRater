@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from homepage.models import Course, Review, AppUser, UserLikes, User, FollowedUserCourses
+from homepage.models import Course, Review, AppUser, UserLikes, User, FollowedUserCourses, Prerequisites
 from homepage.forms import FilterAndSortForm, ReviewForm, SignUpForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -75,14 +75,19 @@ def course(request, id):
     try:
         course = Course.objects.get(pk=id)
         reviews = Review.objects.filter(course=id).order_by('-likes_num')
+        preq = Prerequisites.get_prerequisites_for_course(course)
         liked_reviews = []
+        is_following = False
         if not request.user.is_anonymous:
             liked_reviews = UserLikes.get_liked_reviews_by_user_for_course(request.user, course)
+            is_following = FollowedUserCourses.is_following_course(request.user, course)
         return render(request, 'homepage/courses/course.html', {
             'id': id,
             'course': course,
             'reviews': reviews,
-            'liked_reviews': liked_reviews
+            'liked_reviews': liked_reviews,
+            'is_following': is_following,
+            'preq': preq
         })
     except ObjectDoesNotExist:
         return redirect('courses')

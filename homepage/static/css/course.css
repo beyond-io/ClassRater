@@ -52,6 +52,10 @@
 	justify-content: space-between;
 }
 
+.preq-rows {
+	margin-bottom: 5px;
+}
+
 .course-load-container {
 	display: flex;
 	font-size: 20px;
@@ -115,4 +119,8 @@ img.load-emoji {
 
 .bottom-container {
 	background-color: #e4e4e4;
+}
+
+a#hover {
+	color: #F9AA73;
 }
