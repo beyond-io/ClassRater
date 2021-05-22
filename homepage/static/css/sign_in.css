@@ -1,0 +1,42 @@
+.page-container {
+    background-color: #E4E4E4;
+    padding-bottom: 50px;
+    height: 100%;
+}
+
+.post-btn {
+    background-color: #B6D1D5 !important;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 10px 40px 10px 40px;
+    border: 1px solid white;
+    border-radius: 10px;
+    margin: 20px;
+    box-shadow: 3px 3px 3px grey;
+}
+
+.details-container {
+    display: flex;
+    justify-content: center;
+}
+
+.details {
+    width: 25%;
+    margin: 20px;
+}
+
+.review-form {
+    width: 90%;
+}
+
+.control-group {
+    margin: 10px 0 20px 0;
+}
+
+input {
+    border-radius: 5px;
+    width: 300px;
+    border-style: solid;
+    height: 35px;
+}

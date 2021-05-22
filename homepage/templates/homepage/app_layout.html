@@ -14,7 +14,7 @@
     .author, .eom { color: grey }
      .messages {
         font-size: 22px;
-        background-color:LightSteelBlue; 
+        background-color:#F9AA73; 
         text-shadow: 1px 1px 2px black;
         color: white; 
         padding: 10px;
@@ -32,7 +32,7 @@
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="/">ClassRater</a>
+                <a class="nav-link app-title" href="/">ClassRater</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/courses">Courses</a>
@@ -77,13 +77,13 @@
 {% endif %}
 
 
-<div class="text-center" style="margin-bottom:0">
+<div class="text-center main-container" style="margin-bottom:0">
     {% block content %}
     {% endblock %}
 </div>
 
 
-<div class="text-center">
+<div class="footer">
     <p>ClassRater</p>
 </div>
 

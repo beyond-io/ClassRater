@@ -1,17 +1,27 @@
 {% extends "homepage/app_layout.html" %}
-
-{% block content %}      
-
+{% block content %}
 {% load crispy_forms_tags %}
-
-<div class="container py-5">
-    <h1>Sign In</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {{ sign_in_form|crispy }}
-        <button class="btn btn-primary" type="submit">Sign in</button>
-    </form>
-    <p class="text-center">Don't have an account? <a href="/users/sign_up">Create an account</a>.</p>
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/sign_in.css' %}">
+</head>
+<body>
+<div class="page-container">
+    <div class="container py-5">
+        <h4>Hey Stranger!</h4>
+        <div class="details-container">
+            <div class="details">
+                Log in to add your own reviews, react to others' reviews and follow courses
+            </div>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            {{ sign_in_form|crispy }}
+            <button class="btn btn-primary post-btn" type="submit">Sign in</button>
+        </form>
+        <div class="text-center">Not a member yet?</div>
+        <a href="/users/sign_up">Create an account!</a>
+    </div>
 </div>
-
+</body>
 {% endblock %}

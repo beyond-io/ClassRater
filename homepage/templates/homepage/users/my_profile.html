@@ -1,8 +1,6 @@
 {% extends 'homepage/app_layout.html' %}
 {% load static %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,10 +60,9 @@
             <div class="my-reviews">
                 <p>Last Reviews</p>
             </div> 
-        </div>  
-    </div>
+        </div>
 
-    <div class="bottom-container" style="margin-top:30px">
+        <div class="bottom-container" style="margin-top:30px">
         <div class="reviews-container">
             {% for review in user_reviews %}
             {% include 'homepage/landing/single_preview.html' with review=review %}
@@ -78,9 +75,7 @@
             {% endif %}
         </div>
     </div>
-
+    </div>
 
 </body>
 {% endblock %}
-</html>
-
