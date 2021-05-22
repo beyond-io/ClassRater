@@ -8,7 +8,7 @@ The previous solution is a facebook page, dedicated to this purpose, but it is d
 
 ClassRater improves on this situation by introducing an easy to use data structure, which defaults to a centralized experience: no redundancies, no duplicates, all related information is found in one place.
 
-Using it, students can search for specific courses, read reviews written by other students, and make more informed decisions.
+Using ClassRater, students can search for specific courses, read reviews written by other students, and make more informed decisions.
 
 ## Features
 
@@ -17,34 +17,25 @@ Using it, students can search for specific courses, read reviews written by othe
 * Sort by:
 	* course identifier code
 	* course name
-	* rating
+	* course rating
+	* course load
+	* number of raters
 	* number of reviews
 
-* Complex Search by:
-	* course identifier code
-	* course name
-	* rating
-	* number of reviews
-	* Elective \ Mandatory
-	* Program
-	* Year in Program
-		
+* Search by course name
 * Filter by:
 	* Electives
 	* Mandatories
-	* Programs
-	* Year in Program
-	* Semester availability
 	* Prerequisites 
-	* Course star rating
-	* Course time demand
-	* Course difficulty
+	* Course rating
+	* Course load
 	* Number of raters
 	* Number of reviews
 
-* Add Review / Rating
+* Add Review / Rating: 
+	* with or without referencing professor
 
-## Technologies:
+## Technologies Used:
 
 ClassRater uses:
 * Virtualization:
@@ -56,17 +47,21 @@ ClassRater uses:
 	* [python](https://www.python.org/)
 	* [Django](https://www.djangoproject.com/)
 	* [SQLite](https://www.sqlite.org/index.html)
+	* [pillow] (https://pillow.readthedocs.io/en/stable/)
 * Templating:
 	* HTML5
 	* scss
 	* [Bootstrap](https://getbootstrap.com/)
+	* [django-crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/)
 * Automatic Python Syntax Testing:
 	* [flake8](https://flake8.pycqa.org/en/latest/)
+* Automated testing:
+	* [pytest](https://docs.pytest.org/en/6.2.x/)
+	* [pytest-django](https://pytest-django.readthedocs.io/en/latest/)
 
 ## Members:
 
 Ori Adler, 
-Yair Dana, 
 Leon Rabinovich, 
 Vera Tsvang, 
 Ella Milyavsky
