@@ -1,10 +1,6 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Quicksand:wght@300&family=Work+Sans:wght@300&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&family=Quicksand:wght@500&display=swap');
-body {
-  background-color: #e4ecf8;
-  overflow: hidden;
-}
 
 .navbar-top {
   background-color: #fff;
@@ -113,4 +109,8 @@ body {
   cursor:pointer;
   color:rgba(24, 26, 139, 0.527);
   text-decoration:underline;
+}
+
+.footer {
+  opacity: 1 !important;
 }

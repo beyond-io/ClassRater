@@ -15,6 +15,29 @@
     width: 140px;
 }
 
+.app-title {
+	font-weight: bold;
+	font-size: 24px;
+}
+
+.navbar-nav {
+	align-items: center;
+}
+
+.main-container {
+	height: 88vh;
+	background-color: #E4E4E4;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .course-search {
 	width: 300px;
 }
